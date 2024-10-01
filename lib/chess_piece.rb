@@ -1,5 +1,5 @@
 class ChessPiece 
-  attr_accessor :color, :name, :position
+  attr_accessor :color, :name, :position, :possible_moves
 
   def initialize(color, name, position)
     color = color.downcase
@@ -20,5 +20,7 @@ class ChessPiece
     else
       raise ArgumentError, "Invalid coordinates input"
     end
+
+    @possible_moves = []
   end
 end
