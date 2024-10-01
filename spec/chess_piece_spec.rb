@@ -22,6 +22,11 @@ describe ChessPiece do
         expect(chess_piece_white.position).to eq([5, 2])
       end
 
+      it 'creates an empty array for possible_moves' do
+        expect(chess_piece_red.possible_moves).to eq([])
+        expect(chess_piece_white.possible_moves).to eq([])
+      end
+
       subject(:invalid_color_piece) { described_class.new("green", "K", [0, 0]) }
       subject(:invalid_position_piece) { described_class.new("red", "K", [-1, 7]) }
       subject(:invalid_position_piece2) { described_class.new("red", "K", [0, 70]) }
