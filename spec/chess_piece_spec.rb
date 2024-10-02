@@ -42,4 +42,23 @@ describe ChessPiece do
       end
     end
   end
+
+  describe '#update_position' do
+    subject(:old_position) { described_class.new('red', 'B', [7, 2]) }
+    
+    before do
+      allow(old_position).to receive(:update_possible_moves)
+    end
+    
+    context 'when a new chess position is given' do
+      it 'updates the current position of the chess piece' do
+        expect { old_position.update_position([5,3]) }.to change { old_position.position }.to([5, 3])
+      end
+
+      it 'calls the update_possible_moves method' do
+        expect(old_position).to receive(:update_possible_moves)
+        old_position.update_position([5, 3])
+      end
+    end
+  end
 end
