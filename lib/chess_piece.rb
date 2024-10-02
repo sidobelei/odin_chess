@@ -23,4 +23,13 @@ class ChessPiece
 
     @possible_moves = []
   end
+
+  def update_position(new_position)
+    @position = new_position
+    update_possible_moves
+  end
+
+  def update_possible_moves
+    puts 'Will update possible_moves in subclass'
+  end
 end
