@@ -17,6 +17,11 @@ describe ChessPiece do
         expect(chess_piece_white.name).to eq("\e[1m\e[37mP\e[0m")
       end
 
+      it 'creates an empty array for possible_moves' do
+        expect(chess_piece_red.possible_moves).to eq([])
+        expect(chess_piece_white.possible_moves).to eq([])
+      end
+
       it 'assigns coordinates to the position attribute' do
         expect(chess_piece_red.position).to eq([0, 6])
         expect(chess_piece_white.position).to eq([5, 2])
@@ -25,11 +30,6 @@ describe ChessPiece do
       it 'calls update_possible_moves' do
         expect_any_instance_of(described_class).to receive(:update_possible_moves)
         described_class.new("ReD", "N", [0, 6])
-      end
-
-      it 'creates an empty array for possible_moves' do
-        expect(chess_piece_red.possible_moves).to eq([])
-        expect(chess_piece_white.possible_moves).to eq([])
       end
 
       subject(:invalid_color_piece) { described_class.new("green", "K", [0, 0]) }
