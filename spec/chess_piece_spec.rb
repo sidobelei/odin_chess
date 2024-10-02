@@ -22,6 +22,11 @@ describe ChessPiece do
         expect(chess_piece_white.position).to eq([5, 2])
       end
 
+      it 'calls update_possible_moves' do
+        expect_any_instance_of(described_class).to receive(:update_possible_moves)
+        described_class.new("ReD", "N", [0, 6])
+      end
+
       it 'creates an empty array for possible_moves' do
         expect(chess_piece_red.possible_moves).to eq([])
         expect(chess_piece_white.possible_moves).to eq([])
