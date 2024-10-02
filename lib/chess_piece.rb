@@ -17,6 +17,7 @@ class ChessPiece
 
     if position.length == 2 && Array(0..7).include?(position[0]) && Array(0..7).include?(position[1])
       @position = position
+      update_possible_moves
     else
       raise ArgumentError, "Invalid coordinates input"
     end
