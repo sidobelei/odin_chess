@@ -15,14 +15,14 @@ class ChessPiece
       @name = "\e[1m\e[37m#{name}\e[0m"
     end
 
+    @possible_moves = []
+    
     if position.length == 2 && Array(0..7).include?(position[0]) && Array(0..7).include?(position[1])
       @position = position
       update_possible_moves
     else
       raise ArgumentError, "Invalid coordinates input"
     end
-
-    @possible_moves = []
   end
 
   def update_position(new_position)
