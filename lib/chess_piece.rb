@@ -19,7 +19,6 @@ class ChessPiece
     
     if position.length == 2 && Array(0..7).include?(position[0]) && Array(0..7).include?(position[1])
       @position = position
-      update_possible_moves
     else
       raise ArgumentError, "Invalid coordinates input"
     end
@@ -27,10 +26,9 @@ class ChessPiece
 
   def update_position(new_position)
     @position = new_position
-    update_possible_moves
   end
 
-  def update_possible_moves
+  def update_possible_moves(board)
     puts 'Will update possible_moves in subclass'
   end
 end
