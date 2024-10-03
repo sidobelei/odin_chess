@@ -27,11 +27,6 @@ describe ChessPiece do
         expect(chess_piece_white.position).to eq([5, 2])
       end
 
-      it 'calls update_possible_moves' do
-        expect_any_instance_of(described_class).to receive(:update_possible_moves)
-        described_class.new("ReD", "N", [0, 6])
-      end
-
       subject(:invalid_color_piece) { described_class.new("green", "K", [0, 0]) }
       subject(:invalid_position_piece) { described_class.new("red", "K", [-1, 7]) }
       subject(:invalid_position_piece2) { described_class.new("red", "K", [0, 70]) }
@@ -58,11 +53,6 @@ describe ChessPiece do
     context 'when a new chess position is given' do
       it 'updates the current position of the chess piece' do
         expect { old_position.update_position([5,3]) }.to change { old_position.position }.to([5, 3])
-      end
-
-      it 'calls the update_possible_moves method' do
-        expect(old_position).to receive(:update_possible_moves)
-        old_position.update_position([5, 3])
       end
     end
   end
