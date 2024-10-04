@@ -1,7 +1,7 @@
 class ChessPiece 
-  attr_accessor :color, :name, :position, :possible_moves
+  attr_accessor :color, :name, :position, :possible_moves, :type
 
-  def initialize(color, name, position)
+  def initialize(color, name, type, position)
     color = color.downcase
     if color == "red" || color == "white"
       @color = color
@@ -15,6 +15,7 @@ class ChessPiece
       @name = "\e[1m\e[37m#{name}\e[0m"
     end
 
+    @type = type
     @possible_moves = []
     
     if position.length == 2 && Array(0..7).include?(position[0]) && Array(0..7).include?(position[1])
