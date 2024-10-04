@@ -86,4 +86,62 @@ describe ChessPiece do
       end
     end
   end
+
+  describe '#king_or_same_color?' do
+    subject(:king1) { described_class.new('red', 'K', 'king', [0, 1]) }
+    subject(:king2) { described_class.new('red', 'K', 'king', [7, 6]) }
+    subject(:rook1) { described_class.new('red', 'R', 'rook', [0, 2]) }
+    subject(:rook2) { described_class.new('red', 'R', 'rook', [0, 3]) }
+    subject(:pawn1) { described_class.new('red', 'P', 'pawn', [1, 0]) }
+    subject(:pawn2) { described_class.new('red', 'P', 'pawn', [1, 1]) }
+    subject(:pawn3) { described_class.new('red', 'P', 'pawn', [1, 5]) }
+    subject(:pawn4) { described_class.new('red', 'P', 'pawn', [1, 6]) }
+    subject(:pawn5) { described_class.new('red', 'P', 'pawn', [1, 7]) }
+    subject(:knight1) { described_class.new('red', 'N', 'knight', [4, 2]) }
+    subject(:bishop) { described_class.new('white', 'B', 'bishop', [3, 4]) }
+    subject(:rook3) { described_class.new('white', 'R', 'rook', [7, 4]) }
+    subject(:queen) { described_class.new('white', 'Q', 'queen', [3, 6]) }
+    let(:board) { [
+      king1,
+      king2,
+      rook1,
+      rook2,
+      pawn1,
+      pawn2,
+      pawn3,
+      pawn4,
+      pawn5,
+      knight1,
+      bishop,
+      rook3,
+      queen
+    ] }
+    context 'when a King occupies the square on the board that you want to move to' do
+      it 'returns true' do
+        expect(bishop.king_or_same_color?(board, [0, 1])).to eq(true)
+        expect(bishop.king_or_same_color?(board, [7, 6])).to eq(true)
+      end
+    end
+
+    context 'when the square on the board is occupied by your own chess piece' do
+      it 'returns true' do
+        expect(rook1.king_or_same_color?(board, [0, 3])).to eq(true)
+        expect(rook1.king_or_same_color?(board, [4, 2])).to eq(true)
+        expect(king1.king_or_same_color?(board, [1, 0])).to eq(true)
+      end
+    end
+
+    context 'when the square on the board is empty and you move your chess piece to it' do
+      it 'returns false' do
+        expect(queen.king_or_same_color?(board, [2, 6])).to eq(false)
+        expect(queen.king_or_same_color?(board, [2, 7])).to eq(false)
+        expect(queen.king_or_same_color?(board, [3, 7])).to eq(false)
+        expect(queen.king_or_same_color?(board, [4, 7])).to eq(false)
+        expect(queen.king_or_same_color?(board, [4, 6])).to eq(false)
+        expect(queen.king_or_same_color?(board, [4, 5])).to eq(false)
+        expect(queen.king_or_same_color?(board, [3, 5])).to eq(false)
+        expect(queen.king_or_same_color?(board, [2, 5])).to eq(false)
+      end
+    end
+  end
 end
