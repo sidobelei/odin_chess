@@ -32,4 +32,8 @@ class ChessPiece
   def update_possible_moves(board)
     puts 'Will update possible_moves in subclass'
   end
+
+  def out_of_bounds?(pos)
+    pos[0] > 7 || pos[0] < 0 || pos[1] > 7 || pos[1] < 0
+  end
 end
