@@ -40,4 +40,8 @@ class ChessPiece
   def king_or_same_color?(board, pos)
     board.any? { |piece| (piece.type == 'king' && piece.position == pos) || (piece.color == @color && piece.position == pos) }
   end
+
+  def opponent_piece?(board, pos)
+    board.any? { |piece| piece.color != @color && piece.position == pos}
+  end
 end
