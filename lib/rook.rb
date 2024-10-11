@@ -7,4 +7,11 @@ class Rook < ChessPiece
     super(color, 'R', 'rook', position)
     @moved = false
   end
+
+  def update_position(new_position)
+    @position = new_position
+    if moved == false
+      @moved = true
+    end
+  end
 end
