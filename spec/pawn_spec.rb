@@ -32,7 +32,8 @@ describe Pawn do
   end
 
   describe '#update_position' do
-    subject(:pawn) { described_class.new('white', [4, 4]) }
+    subject(:default_pawn) { described_class.new('red', [2, 7]) }
+    subject(:moved_pawn) { described_class.new('white', [4, 4]) }
     subject(:white_pawn1) { described_class.new('white', [1, 0]) }
     subject(:white_pawn2) { described_class.new('white', [1, 1]) }
     subject(:white_pawn3) { described_class.new('white', [1, 2]) }
@@ -50,11 +51,22 @@ describe Pawn do
     subject(:red_pawn7) { described_class.new('red', [6, 6]) }
     subject(:red_pawn8) { described_class.new('red', [6, 7]) }
 
-    context 'when the Pawn has not reached the other end of the board' do
-      it 'updates its current position' do
-        expect(pawn.position).to eq([4, 4])
-        pawn.update_position([5, 4])
-        expect(pawn.position).to eq([5, 4])
+    context 'when the Pawn has not reached the other end of the board and has not been moved' do
+      it 'updates its current position and changes moved attribute to true' do
+        expect(default_pawn.position).to eq([2, 7])
+        expect(default_pawn.moved).to eq(false)
+        default_pawn.update_position([4, 7])
+        expect(default_pawn.position).to eq([4, 7])
+        expect(default_pawn.moved).to eq(true)
+      end
+    
+    end
+    
+    context 'when the Pawn has not reached the other end of the board and has moved' do
+      it 'updates its current position and the moved attribute is still true' do
+        expect(moved_pawn.position).to eq([4, 4])
+        moved_pawn.update_position([5, 4])
+        expect(moved_pawn.position).to eq([5, 4])
       end
     end
 
