@@ -16,6 +16,10 @@ attr_accessor :moved, :promoted, :opposite_row
   end
 
   def update_position(new_position)
+    if moved == false
+      @moved = true
+    end
+    
     if new_position[0] == opposite_row
       @position = nil
       @promoted = true
