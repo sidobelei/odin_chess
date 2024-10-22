@@ -123,4 +123,318 @@ describe Pawn do
       end
     end
   end
+
+  describe '#update_possible_moves' do
+    subject(:moved_pawn_white) { described_class.new('white', [5, 6]) }
+    subject(:moved_pawn_red) { described_class.new('red', [1, 2]) }
+    subject(:unmoved_pawn_white) { described_class.new('white', [6, 1]) }
+    subject(:unmoved_pawn_red) { described_class.new('red', [1, 5]) }
+    subject(:moved_pawn_white_edge) { described_class.new('white', [6, 7]) }
+    subject(:moved_pawn_red_edge) { described_class.new('red', [1, 0]) }
+    let(:knight1) { double('Knight', color: 'red', name: 'N', type: 'knight', position: [3, 5]) }
+    let(:pawn1) { double('Pawn', color: 'red', name: 'P', type: 'pawn', position: [3, 6]) }
+    let(:pawn2) { double('Pawn', color: 'red', name: 'P', type: 'pawn', position: [3, 7]) }
+    let(:bishop1) { double('Bishop', color: 'red', name: 'B', type: 'bishop', position: [4, 5]) }
+    let(:bishop2) { double('Bishop', color: 'red', name: 'B', type: 'bishop', position: [5, 5]) }
+    let(:rook1) { double('Rook', color: 'red', name: 'R', type: 'rook', position: [4, 7]) }
+    let(:rook2) { double('Rook', color: 'red', name: 'R', type: 'rook', position: [5, 6]) }
+    let(:queen1) { double('Queen', color: 'red', name: 'Q', type: 'queen', position: [5, 7]) }
+    let(:knight2) { double('Knight', color: 'white', name: 'N', type: 'knight', position: [4, 0]) }
+    let(:pawn3) { double('Pawn', color: 'white', name: 'P', type: 'pawn', position: [4, 1]) }
+    let(:pawn4) { double('Pawn', color: 'white', name: 'P', type: 'pawn', position: [4, 2]) }
+    let(:bishop3) { double('Bishop', color: 'white', name: 'B', type: 'bishop', position: [3, 0]) }
+    let(:bishop4) { double('Bishop', color: 'white', name: 'B', type: 'bishop', position: [2, 0]) }
+    let(:rook3) { double('Rook', color: 'white', name: 'R', type: 'rook', position: [3, 2]) }
+    let(:rook4) { double('Rook', color: 'white', name: 'R', type: 'rook', position: [2, 1]) }
+    let(:queen2) { double('Queen', color: 'white', name: 'Q', type: 'queen', position: [2, 2]) }
+    let(:king1) { double('King', color: 'white', name: 'K', type: 'king', position: [4, 1]) }
+    let(:king2) { double('King', color: 'red', name: 'K', type: 'king', position: [3, 5]) }
+    let(:knight3) { double('Knight', color: 'white', name: 'N', type: 'knight', position: [2, 5]) }
+    let(:knight4) { double('Knight', color: 'red', name: 'N', type: 'knight', position: [5, 1]) }
+    
+    let(:board_boxed_in_opposite) { [
+      moved_pawn_white,
+      knight1,
+      pawn1,
+      pawn2,
+      bishop1,
+      bishop2,
+      rook1,
+      rook2,
+      queen1,
+      moved_pawn_red,
+      knight2,
+      pawn3,
+      pawn4,
+      bishop3,
+      bishop4,
+      rook3,
+      rook4,
+      queen2
+    ] }
+
+    let(:board_boxed_in_same) { [
+      moved_pawn_white,
+      knight1,
+      pawn1,
+      pawn2,
+      bishop1,
+      bishop2,
+      rook1,
+      rook2,
+      queen1,
+      moved_pawn_red,
+      knight2,
+      pawn3,
+      pawn4,
+      bishop3,
+      bishop4,
+      rook3,
+      rook4,
+      queen2
+    ] }
+
+    let(:board_empty) { [
+      moved_pawn_white,
+      moved_pawn_red,
+      unmoved_pawn_white,
+      unmoved_pawn_red
+    ] }
+
+    let(:board_diagonals) { [
+      moved_pawn_white,
+      knight1,
+      pawn2,
+      moved_pawn_red,
+      knight2,
+      pawn4
+    ] }
+
+    let(:board_block_forward_1) { [
+      unmoved_pawn_white,
+      knight3,
+      unmoved_pawn_red,
+      knight4
+    ] }
+    
+    let(:board_block_forward_2) { [
+      unmoved_pawn_white,
+      king1,
+      unmoved_pawn_red,
+      king2
+    ] }
+
+    let(:board_edges) { [
+      moved_pawn_white_edge,
+      moved_pawn_red_edge
+    ] }
+    
+    context 'when the Pawn was moved and is surrounded by chess pieces that are of a different color' do
+      before do
+        allow(moved_pawn_white).to receive(:opponent_piece?).and_return(true, false, true, true)
+        allow(moved_pawn_white).to receive(:out_of_bounds?).and_return(false)
+        allow(moved_pawn_white).to receive(:king_or_same_color?).and_return(false)
+        allow(moved_pawn_red).to receive(:opponent_piece?).and_return(true, false, true, true)
+        allow(moved_pawn_red).to receive(:out_of_bounds?).and_return(false)
+        allow(moved_pawn_red).to receive(:king_or_same_color?).and_return(false)
+      end
+
+      it 'possible_moves has a limited set of moves' do
+        moved_pawn_white.update_position([4, 6])
+        moved_pawn_white.update_possible_moves(board_boxed_in_opposite)
+        expect(moved_pawn_white.possible_moves).to eq([
+          [3, 5],
+          [3, 7]
+        ])
+        
+        moved_pawn_red.update_position([3, 1])
+        moved_pawn_red.update_possible_moves(board_boxed_in_opposite)
+        expect(moved_pawn_red.possible_moves).to eq([
+          [4, 0],
+          [4, 2]
+        ])
+      end
+    end
+
+    context 'when the Pawn was moved and is surrounded by chess pieces that are the same color' do
+      before do
+        allow(moved_pawn_white).to receive(:opponent_piece?).and_return(false, false, false, false, false, false)
+        allow(moved_pawn_white).to receive(:out_of_bounds?).and_return(false, false, false)
+        allow(moved_pawn_white).to receive(:king_or_same_color?).and_return(true, true, true)
+        allow(moved_pawn_red).to receive(:opponent_piece?).and_return(false, false, false, false, false, false)
+        allow(moved_pawn_red).to receive(:out_of_bounds?).and_return(false, false, false)
+        allow(moved_pawn_red).to receive(:king_or_same_color?).and_return(true, true, true)
+      end
+
+      it 'generates an empty set of moves for possible_moves' do
+        moved_pawn_white.update_position([3, 1])
+        moved_pawn_white.update_possible_moves(board_boxed_in_same)
+        expect(moved_pawn_white.possible_moves).to eq([])
+
+        moved_pawn_red.update_position([4, 6])
+        moved_pawn_red.update_possible_moves(board_boxed_in_same)
+        expect(moved_pawn_red.possible_moves).to eq([])
+      end
+    end
+
+    context 'when the Pawn was moved and there are no pieces around' do
+      before do
+        allow(moved_pawn_white).to receive(:opponent_piece?).and_return(false, false, false, false, false, false)
+        allow(moved_pawn_white).to receive(:out_of_bounds?).and_return(false, false, false)
+        allow(moved_pawn_white).to receive(:king_or_same_color?).and_return(false, false, false)
+        allow(moved_pawn_red).to receive(:opponent_piece?).and_return(false, false, false, false, false, false)
+        allow(moved_pawn_red).to receive(:out_of_bounds?).and_return(false, false, false)
+        allow(moved_pawn_red).to receive(:king_or_same_color?).and_return(false, false, false)
+      end
+
+      it 'possible_moves only has one move' do
+        moved_pawn_white.update_position([4, 6])
+        moved_pawn_white.update_possible_moves(board_empty)
+        expect(moved_pawn_white.possible_moves).to eq([
+          [3, 6]
+        ])
+
+        moved_pawn_red.update_position([3, 1])
+        moved_pawn_red.update_possible_moves(board_empty)
+        expect(moved_pawn_red.possible_moves).to eq([
+          [4, 1]
+        ])
+      end
+    end
+
+    context 'when the Pawn was moved and there are chess pieces of a different color on the diagonals only' do
+      before do
+        allow(moved_pawn_white).to receive(:opponent_piece?).and_return(true, false, false, true)
+        allow(moved_pawn_white).to receive(:out_of_bounds?).and_return(false,)
+        allow(moved_pawn_white).to receive(:king_or_same_color?).and_return(false)
+        allow(moved_pawn_red).to receive(:opponent_piece?).and_return(true, false, false, true)
+        allow(moved_pawn_red).to receive(:out_of_bounds?).and_return(false)
+        allow(moved_pawn_red).to receive(:king_or_same_color?).and_return(false)
+      end
+
+      it 'possible_moves has all moves' do
+        moved_pawn_white.update_position([4, 6])
+        moved_pawn_white.update_possible_moves(board_diagonals)
+        expect(moved_pawn_white.possible_moves).to eq([
+          [3, 5],
+          [3, 6],
+          [3, 7]
+        ])
+
+        moved_pawn_red.update_position([3, 1])
+        moved_pawn_red.update_possible_moves(board_diagonals)
+        expect(moved_pawn_red.possible_moves).to eq([
+          [4, 0],
+          [4, 1],
+          [4, 2]
+        ])
+      end
+    end
+
+    context 'when the Pawn was moved and there are chess pieces of the same color on the diagonals only' do
+      before do
+        allow(moved_pawn_white).to receive(:opponent_piece?).and_return(false, false, false, false)
+        allow(moved_pawn_white).to receive(:out_of_bounds?).and_return(false, false, false)
+        allow(moved_pawn_white).to receive(:king_or_same_color?).and_return(true, false, true)
+        allow(moved_pawn_red).to receive(:opponent_piece?).and_return(false, false, false, false)
+        allow(moved_pawn_red).to receive(:out_of_bounds?).and_return(false, false, false)
+        allow(moved_pawn_red).to receive(:king_or_same_color?).and_return(true, false, true)
+      end
+
+      it 'possible_moves only has one move' do
+        moved_pawn_white.update_position([5, 1])
+        moved_pawn_white.update_possible_moves(board_diagonals)
+        expect(moved_pawn_white.possible_moves).to eq([[4, 1]])
+
+        moved_pawn_red.update_position([2, 6])
+        moved_pawn_red.update_possible_moves(board_diagonals)
+        expect(moved_pawn_red.possible_moves).to eq([[3, 6]])
+      end
+    end
+
+    context 'when the Pawn has not moved and there are no obstructions' do
+      before do
+        allow(unmoved_pawn_white).to receive(:opponent_piece?).and_return(false, false, false, false, false, false, false)
+        allow(unmoved_pawn_white).to receive(:out_of_bounds?).and_return(false, false, false)
+        allow(unmoved_pawn_white).to receive(:king_or_same_color?).and_return(false, false, false, false)
+        allow(unmoved_pawn_red).to receive(:opponent_piece?).and_return(false, false, false, false, false, false, false)
+        allow(unmoved_pawn_red).to receive(:out_of_bounds?).and_return(false, false, false)
+        allow(unmoved_pawn_red).to receive(:king_or_same_color?).and_return(false, false, false, false)
+      end
+
+      it 'possible_moves has two forward moves' do
+        unmoved_pawn_white.update_possible_moves(board_empty)
+        expect(unmoved_pawn_white.possible_moves).to eq([
+          [5, 1],
+          [4, 1]
+        ])
+
+        unmoved_pawn_red.update_possible_moves(board_empty)
+        expect(unmoved_pawn_red.possible_moves).to eq([
+          [2, 5],
+          [3, 5]
+        ])
+      end
+    end
+
+    context 'when the Pawn has not moved and there is a chess piece in front of it' do
+      before do
+        allow(unmoved_pawn_white).to receive(:opponent_piece?).and_return(false, false, true, true, false)
+        allow(unmoved_pawn_white).to receive(:out_of_bounds?).and_return(false, false, false)
+        allow(unmoved_pawn_white).to receive(:king_or_same_color?).and_return(false, false, false)
+        allow(unmoved_pawn_red).to receive(:opponent_piece?).and_return(false, false, true, true, false)
+        allow(unmoved_pawn_red).to receive(:out_of_bounds?).and_return(false, false, false)
+        allow(unmoved_pawn_red).to receive(:king_or_same_color?).and_return(false, false, false)
+      end
+      
+      it 'possible_moves is an empty array' do
+        unmoved_pawn_white.update_possible_moves(board_block_forward_1)
+        expect(unmoved_pawn_white.possible_moves).to eq([])
+        
+        unmoved_pawn_red.update_possible_moves(board_block_forward_1)
+        expect(unmoved_pawn_red.possible_moves).to eq([])
+      end
+    end
+
+    context 'when the Pawn has not moved and there is a chess piece two squares in front of it' do
+      before do
+        allow(unmoved_pawn_white).to receive(:opponent_piece?).and_return(false, false, false, false, false, false, false)
+        allow(unmoved_pawn_white).to receive(:out_of_bounds?).and_return(false, false, false)
+        allow(unmoved_pawn_white).to receive(:king_or_same_color?).and_return(false, false, true, false)
+        allow(unmoved_pawn_red).to receive(:opponent_piece?).and_return(false, false, false, false, false, false, false)
+        allow(unmoved_pawn_red).to receive(:out_of_bounds?).and_return(false, false, false)
+        allow(unmoved_pawn_red).to receive(:king_or_same_color?).and_return(false, false, true, false)
+      end
+
+      it 'possible_moves only has one move forward' do
+        unmoved_pawn_white.update_possible_moves(board_block_forward_2)
+        expect(unmoved_pawn_white.possible_moves).to eq([[5, 1]])
+
+        unmoved_pawn_red.update_possible_moves(board_block_forward_2)
+        expect(unmoved_pawn_red.possible_moves).to eq([[2, 5]])
+      end
+    end
+  
+
+    context 'when the Pawn has moved and is positioned near the edge of the board' do
+      before do
+        allow(moved_pawn_white_edge).to receive(:opponent_piece?).and_return(false, false, false, false, false)
+        allow(moved_pawn_white_edge).to receive(:out_of_bounds?).and_return(true, false, false)
+        allow(moved_pawn_white_edge).to receive(:king_or_same_color?).and_return(false, false)
+        allow(moved_pawn_red_edge).to receive(:opponent_piece?).and_return(false, false, false, false, false)
+        allow(moved_pawn_red_edge).to receive(:out_of_bounds?).and_return(false, false, true)
+        allow(moved_pawn_red_edge).to receive(:king_or_same_color?).and_return(false, false)
+      end
+
+      it 'possible_moves only has one forward move' do
+        moved_pawn_white_edge.update_position([4, 7])
+        moved_pawn_white_edge.update_possible_moves(board_edges)
+        expect(moved_pawn_white_edge.possible_moves).to eq([[3, 7]])
+
+        moved_pawn_red_edge.update_position([2, 0])
+        moved_pawn_red_edge.update_possible_moves(board_edges)
+        expect(moved_pawn_red_edge.possible_moves).to eq([[3, 0]])
+      end
+    end
+  end
 end
