@@ -437,4 +437,121 @@ describe Pawn do
       end
     end
   end
+
+  describe '#remove_en_passant' do
+    subject(:pawn_white) { described_class.new('white', [6, 2]) }
+    subject(:pawn_red) {  described_class.new('red', [1, 5]) }
+    subject(:opposing_pawn_white_1) { described_class.new('white', [6, 6]) }
+    subject(:opposing_pawn_red_1) { described_class.new('red', [1, 1]) }
+    subject(:opposing_pawn_white_2) { described_class.new('white', [6, 4]) }
+    subject(:opposing_pawn_red_2) { described_class.new('red', [1, 3]) }
+    
+    let(:board) { [
+      pawn_white,
+      pawn_red,
+      opposing_pawn_white_1,
+      opposing_pawn_white_2,
+      opposing_pawn_red_1,
+      opposing_pawn_red_2
+    ] }
+
+    before do
+      pawn_white.update_position([4, 2])
+      pawn_white.update_possible_moves(board)
+      pawn_white.update_position([3, 2])
+      pawn_white.update_possible_moves(board)
+
+      pawn_red.update_position([3, 5])
+      pawn_red.update_possible_moves(board)
+      pawn_red.update_position([4, 5])
+      pawn_red.update_possible_moves(board)
+
+      opposing_pawn_white_1.update_position([4, 6])
+      opposing_pawn_red_1.update_position([3, 1])
+      opposing_pawn_white_2.update_position([4, 4])
+      opposing_pawn_red_2.update_position([3, 3])
+    end
+
+    context 'when there are no moves in en_passant_moves' do
+      it 'no moves are removed in possible_moves' do
+        expect(pawn_white.en_passant_moves).to eq([])
+        expect(pawn_red.en_passant_moves).to eq([])
+        expect(pawn_white.possible_moves).to eq([[2, 2]])
+        expect(pawn_red.possible_moves).to eq([[5, 5]])
+
+        pawn_white.remove_en_passant
+        expect(pawn_white.possible_moves).to eq([[2, 2]])
+        pawn_red.remove_en_passant
+        expect(pawn_red.possible_moves).to eq([[5, 5]])
+      end
+    end
+
+    context 'when there are moves in en_passant_moves and the first entry is in the possible_moves array' do
+      it 'removes the first entry from possible_moves' do
+        pawn_white.possible_moves = [
+          [2, 2],
+          [2, 1]
+        ]
+        pawn_white.en_passant_moves= [[2, 1]]
+        expect(pawn_white.possible_moves).to eq([
+          [2, 2],
+          [2, 1]
+        ])
+        pawn_white.remove_en_passant
+        expect(pawn_white.possible_moves).to eq([[2, 2]])
+
+        pawn_white.possible_moves = [
+          [2, 2],
+          [2, 3]
+        ]
+        pawn_white.en_passant_moves = [[2, 3]]
+        expect(pawn_white.possible_moves).to eq([
+          [2, 2],
+          [2, 3]
+        ])
+        pawn_white.remove_en_passant
+        expect(pawn_white.possible_moves).to eq([[2, 2]])
+
+        pawn_red.possible_moves = [
+          [5, 5],
+          [5, 4]
+        ]
+        pawn_red.en_passant_moves= [[5, 4]]
+        expect(pawn_red.possible_moves).to eq([
+          [5, 5],
+          [5, 4]
+        ])
+        pawn_red.remove_en_passant
+        expect(pawn_red.possible_moves).to eq([[5, 5]])
+
+        pawn_red.possible_moves = [
+          [5, 5],
+          [5, 6]
+        ]
+        pawn_red.en_passant_moves = [[5, 6]]
+        expect(pawn_red.possible_moves).to eq([
+          [5, 5],
+          [5, 6]
+        ])
+        pawn_red.remove_en_passant
+        expect(pawn_red.possible_moves).to eq([[5, 5]])
+      end
+    end
+
+    context 'when there are moves in en_passant_moves but not in the possible_moves array' do
+      it 'no moves are removed in possible_moves' do
+        pawn_white.possible_moves = [[2, 2]]
+        pawn_white.en_passant_moves = [[2, 1]]
+        expect(pawn_white.possible_moves).to eq([[2, 2]])
+        pawn_white.remove_en_passant
+        expect(pawn_white.possible_moves).to eq([[2, 2]])
+
+        pawn_red.possible_moves = [[5, 5]]
+        pawn_red.en_passant_moves = [[5, 6]]
+        expect(pawn_red.possible_moves).to eq([[5, 5]])
+        pawn_white.remove_en_passant
+        expect(pawn_red.possible_moves).to eq([[5, 5]])
+      end
+    end
+  end
 end
