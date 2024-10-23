@@ -1,7 +1,7 @@
 require_relative 'chess_piece'
 
 class Pawn < ChessPiece
-attr_accessor :moved, :promoted, :opposite_row, :direction
+attr_accessor :moved, :promoted, :opposite_row, :direction, :en_passant_moves
 
   def initialize(color, position)
     super(color, 'P', 'pawn', position)
@@ -14,7 +14,7 @@ attr_accessor :moved, :promoted, :opposite_row, :direction
       @opposite_row = 0
       @direction = -1
     end
-    
+    @en_passant_moves = []
   end
 
   def update_position(new_position)
@@ -52,5 +52,10 @@ attr_accessor :moved, :promoted, :opposite_row, :direction
       end
       @possible_moves = new_moves
     end 
+  end
+
+  def remove_en_passant
+    removed_move = en_passant_moves.shift
+    possible_moves.delete(removed_move)
   end
 end
