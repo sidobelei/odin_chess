@@ -21,8 +21,8 @@ describe Pawn do
         expect(pawn.position).to eq([4, 4])
       end
       
-      it 'assigns false to the moved attribute' do
-        expect(pawn.moved).to eq(false)
+      it 'assigns zero to the moved attribute' do
+        expect(pawn.moved).to eq(0)
       end
       
       it 'assigns false to the promoted attribute' do
@@ -52,18 +52,18 @@ describe Pawn do
     subject(:red_pawn8) { described_class.new('red', [6, 7]) }
 
     context 'when the Pawn has not reached the other end of the board and has not been moved' do
-      it 'updates its current position and changes moved attribute to true' do
+      it 'updates its current position and changes moved attribute to one' do
         expect(default_pawn.position).to eq([2, 7])
-        expect(default_pawn.moved).to eq(false)
+        expect(default_pawn.moved).to eq(0)
         default_pawn.update_position([4, 7])
         expect(default_pawn.position).to eq([4, 7])
-        expect(default_pawn.moved).to eq(true)
+        expect(default_pawn.moved).to eq(1)
       end
     
     end
     
     context 'when the Pawn has not reached the other end of the board and has moved' do
-      it 'updates its current position and the moved attribute is still true' do
+      it 'updates its current position and the moved attribute is not zero' do
         expect(moved_pawn.position).to eq([4, 4])
         moved_pawn.update_position([5, 4])
         expect(moved_pawn.position).to eq([5, 4])
@@ -246,7 +246,7 @@ describe Pawn do
           [3, 5],
           [3, 7]
         ])
-        
+
         moved_pawn_red.update_position([3, 1])
         moved_pawn_red.update_possible_moves(board_boxed_in_opposite)
         expect(moved_pawn_red.possible_moves).to eq([

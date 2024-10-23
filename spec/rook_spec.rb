@@ -20,8 +20,8 @@ describe Rook do
         expect(rook.position).to eq([3, 4])
       end
       
-      it 'assigns false to the moved attribute' do
-        expect(rook.moved).to eq(false)
+      it 'assigns zero to the moved attribute' do
+        expect(rook.moved).to eq(0)
       end
     end
   end
@@ -30,23 +30,23 @@ describe Rook do
     context 'when the Rook was not moved and is called to be moved' do
       subject(:rook_unmoved) { described_class.new('white', [7, 0]) }
       
-      it 'updates the current position and changes the moved attribute to true' do
+      it 'updates the current position and changes the moved attribute to one' do
         rook_unmoved.update_position([5, 0])
         expect(rook_unmoved.position).to eq([5, 0])
-        expect(rook_unmoved.moved).to eq(true)
+        expect(rook_unmoved.moved).to eq(1)
       end
     end
 
     context 'when the Rook was moved previously and is called to be moved again' do
       subject(:rook_moved) { described_class.new('red', [0, 7]) }
       
-      it 'updates the current position and moved attribute stays true' do
-        expect(rook_moved.moved).to eq(false)
+      it 'updates the current position and moved attribute increases by two' do
+        expect(rook_moved.moved).to eq(0)
         rook_moved.update_position([0, 6])
-        expect(rook_moved.moved).to eq(true)
+        expect(rook_moved.moved).to eq(1)
         rook_moved.update_position([4, 6])
         expect(rook_moved.position).to eq([4, 6])
-        expect(rook_moved.moved).to eq(true)
+        expect(rook_moved.moved).to eq(2)
       end
     end
   end
@@ -133,7 +133,7 @@ describe Rook do
       end
     end
 
-    context 'when the board is surrounded by different chess pieces' do
+    context 'when the board is surrounded by different chess pieces' do #fix wording
       before do
         allow(rook).to receive(:out_of_bounds?).and_return(false, false, false, false, false, false, false, false, false)
         allow(rook).to receive(:king_or_same_color?).and_return(false, true, false, false, false, false, false, false, true)

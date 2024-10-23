@@ -5,7 +5,7 @@ attr_accessor :moved, :promoted, :opposite_row, :direction
 
   def initialize(color, position)
     super(color, 'P', 'pawn', position)
-    @moved = false
+    @moved = 0
     @promoted = false
     if color == 'red'
       @opposite_row = 7
@@ -18,16 +18,13 @@ attr_accessor :moved, :promoted, :opposite_row, :direction
   end
 
   def update_position(new_position)
-    if moved == false
-      @moved = true
-    end
-    
     if new_position[0] == opposite_row
       @position = nil
       @promoted = true
     else
       @position = new_position
     end
+    @moved += 1
   end
 
   def update_possible_moves(board)
@@ -47,7 +44,7 @@ attr_accessor :moved, :promoted, :opposite_row, :direction
       elsif out_of_bounds?(temp) == false && king_or_same_color?(board, temp) == false && opponent_piece?(board, temp) == false && move[2] == 'movement'
         new_moves << temp
         temp = [temp[0] + direction, temp[1]]
-        if moved == false && opponent_piece?(board, temp) == false && king_or_same_color?(board, temp) == false
+        if moved == 0 && opponent_piece?(board, temp) == false && king_or_same_color?(board, temp) == false
           new_moves << temp
         end
       else

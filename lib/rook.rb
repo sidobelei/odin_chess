@@ -5,14 +5,12 @@ class Rook < ChessPiece
 
   def initialize(color, position) 
     super(color, 'R', 'rook', position)
-    @moved = false
+    @moved = 0
   end
 
   def update_position(new_position)
     @position = new_position
-    if moved == false
-      @moved = true
-    end
+    @moved += 1
   end
 
   def update_possible_moves(board)
