@@ -554,4 +554,118 @@ describe Pawn do
       end
     end
   end
+
+  describe '#add_en_passant' do
+    subject(:pawn_white) { described_class.new('white', [6, 1]) }
+    subject(:pawn_red) { described_class.new('red', [1, 6]) }
+    subject(:opposing_pawn_white_left) { described_class.new('white', [6, 5]) }
+    subject(:opposing_pawn_white_right) { described_class.new('white', [6, 7]) }
+    subject(:opposing_pawn_red_left) { described_class.new('red', [1, 0]) }
+    subject(:opposing_pawn_red_right) { described_class.new('red', [1, 2]) }
+    let(:bishop_white_left) { double('Bishop', color: 'white', name: 'B', type: 'bishop', position: [5, 5]) }
+    let(:rook_white_right) { double('Rook', color: 'white', name: 'R', type: 'rook', position: [5, 7], moved: 1) }
+    let(:rook_red_left) { double('Rook', color: 'red', name: 'R', type: 'rook', position: [3, 0], moved: 1) }
+    let(:bishop_red_right) { double('Bishop', color: 'red', name: 'B', type: 'bishop', position: [3, 2]) }
+
+    before do
+      pawn_white.update_position([4, 1])
+      pawn_white.update_position([3, 1])
+      
+      pawn_red.update_position([3, 6])
+      pawn_red.update_position([4, 6])
+
+      opposing_pawn_white_left.update_position([4, 5])
+      opposing_pawn_white_right.update_position([4, 7])
+      opposing_pawn_red_left.update_position([3, 0])
+      opposing_pawn_red_right.update_position([3, 2])
+    end
+
+    let(:board_no_en_passant) { [
+      pawn_white,
+      pawn_red,
+      bishop_white_left,
+      rook_white_right,
+      rook_red_left,
+      bishop_red_right
+    ] }
+
+    let(:board_left_en_passant) { [
+      pawn_white,
+      pawn_red,
+      opposing_pawn_white_left,
+      opposing_pawn_red_left
+    ] }
+    
+    let(:board_right_en_passant) { [
+      pawn_white,
+      pawn_red,
+      opposing_pawn_white_right,
+      opposing_pawn_red_right
+    ] }
+
+    context 'when there is no opportunity for an en passant move' do
+      before do
+        allow(pawn_white).to receive(:remove_en_passant)
+        allow(pawn_red).to receive(:remove_en_passant)
+      end
+
+      it 'no extra move is added to possible_moves' do
+        pawn_white.update_possible_moves(board_no_en_passant)
+        old_white_moves = pawn_white.possible_moves   
+        pawn_white.add_en_passant(board_no_en_passant)
+        expect(pawn_white.possible_moves).to eq(old_white_moves)
+
+        pawn_red.update_possible_moves(board_no_en_passant)
+        old_red_moves = pawn_red.possible_moves
+        pawn_red.add_en_passant(board_no_en_passant)
+        expect(pawn_red.possible_moves).to eq(old_red_moves)
+      end    
+    end
+
+    context 'when there is an en passant opportunity to the left of the pawn' do
+      before do
+        allow(pawn_white).to receive(:remove_en_passant)
+        allow(pawn_red).to receive(:remove_en_passant)  
+      end
+
+      it 'adds an extra move to possible_moves' do 
+        pawn_white.update_possible_moves(board_left_en_passant)
+        pawn_white.add_en_passant(board_left_en_passant)
+        expect(pawn_white.possible_moves).to eq([
+          [2, 1],
+          [2, 0]
+        ])
+
+        pawn_red.update_possible_moves(board_left_en_passant)
+        pawn_red.add_en_passant(board_left_en_passant)
+        expect(pawn_red.possible_moves).to eq([
+          [5, 6],
+          [5, 5]
+        ])           
+      end    
+    end
+
+    context 'when there is an en passant opportunity to the right of the pawn' do
+      before do
+        allow(pawn_white).to receive(:remove_en_passant)
+        allow(pawn_red).to receive(:remove_en_passant)  
+      end
+
+      it 'adds an extra move to possible_moves' do 
+        pawn_white.update_possible_moves(board_right_en_passant)
+        pawn_white.add_en_passant(board_right_en_passant)
+        expect(pawn_white.possible_moves).to eq([
+          [2, 1],
+          [2, 2]
+        ])
+
+        pawn_red.update_possible_moves(board_right_en_passant)
+        pawn_red.add_en_passant(board_right_en_passant)
+        expect(pawn_red.possible_moves).to eq([
+          [5, 6],
+          [5, 7]
+        ])           
+      end     
+    end
+  end
 end
