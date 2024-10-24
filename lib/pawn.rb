@@ -54,6 +54,23 @@ attr_accessor :moved, :promoted, :opposite_row, :direction, :en_passant_moves
     end 
   end
 
+  def add_en_passant(board)
+    remove_en_passant
+    on_left = [position[0], position[1] - 1]
+    on_right = [position[0], position[1] + 1]
+    board.each do |piece|
+      if piece.color != @color && piece.type == 'pawn' && piece.moved == 1
+        if piece.position == on_left 
+          @possible_moves << [position[0] + direction, position[1] - 1]
+        elsif piece.position == on_right
+          @possible_moves << [position[0] + direction, position[1] + 1]
+        else
+          next
+        end
+      end
+    end
+  end
+
   def remove_en_passant
     removed_move = en_passant_moves.shift
     possible_moves.delete(removed_move)
