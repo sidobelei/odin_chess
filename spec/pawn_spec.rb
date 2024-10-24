@@ -131,17 +131,19 @@ describe Pawn do
     subject(:unmoved_pawn_red) { described_class.new('red', [1, 5]) }
     subject(:moved_pawn_white_edge) { described_class.new('white', [6, 7]) }
     subject(:moved_pawn_red_edge) { described_class.new('red', [1, 0]) }
+    subject(:white_en_passant) { described_class.new('white', [4, 6]) }
+    subject(:red_en_passant) { described_class.new('red', [3, 2]) }
     let(:knight1) { double('Knight', color: 'red', name: 'N', type: 'knight', position: [3, 5]) }
-    let(:pawn1) { double('Pawn', color: 'red', name: 'P', type: 'pawn', position: [3, 6]) }
-    let(:pawn2) { double('Pawn', color: 'red', name: 'P', type: 'pawn', position: [3, 7]) }
+    let(:pawn1) { double('Pawn', color: 'red', name: 'P', type: 'pawn', position: [3, 6], moved: 0) }
+    let(:pawn2) { double('Pawn', color: 'red', name: 'P', type: 'pawn', position: [3, 7], moved: 0) }
     let(:bishop1) { double('Bishop', color: 'red', name: 'B', type: 'bishop', position: [4, 5]) }
     let(:bishop2) { double('Bishop', color: 'red', name: 'B', type: 'bishop', position: [5, 5]) }
     let(:rook1) { double('Rook', color: 'red', name: 'R', type: 'rook', position: [4, 7]) }
     let(:rook2) { double('Rook', color: 'red', name: 'R', type: 'rook', position: [5, 6]) }
     let(:queen1) { double('Queen', color: 'red', name: 'Q', type: 'queen', position: [5, 7]) }
     let(:knight2) { double('Knight', color: 'white', name: 'N', type: 'knight', position: [4, 0]) }
-    let(:pawn3) { double('Pawn', color: 'white', name: 'P', type: 'pawn', position: [4, 1]) }
-    let(:pawn4) { double('Pawn', color: 'white', name: 'P', type: 'pawn', position: [4, 2]) }
+    let(:pawn3) { double('Pawn', color: 'white', name: 'P', type: 'pawn', position: [4, 1], moved: 0) }
+    let(:pawn4) { double('Pawn', color: 'white', name: 'P', type: 'pawn', position: [4, 2], moved: 0) }
     let(:bishop3) { double('Bishop', color: 'white', name: 'B', type: 'bishop', position: [3, 0]) }
     let(:bishop4) { double('Bishop', color: 'white', name: 'B', type: 'bishop', position: [2, 0]) }
     let(:rook3) { double('Rook', color: 'white', name: 'R', type: 'rook', position: [3, 2]) }
@@ -151,7 +153,9 @@ describe Pawn do
     let(:king2) { double('King', color: 'red', name: 'K', type: 'king', position: [3, 5]) }
     let(:knight3) { double('Knight', color: 'white', name: 'N', type: 'knight', position: [2, 5]) }
     let(:knight4) { double('Knight', color: 'red', name: 'N', type: 'knight', position: [5, 1]) }
-    
+    let(:knight5) { double('Knight', color: 'white', name: 'N', type: 'knight', position: [5, 3]) }
+    let(:knight6) { double('Knight', color: 'red', name: 'N', type: 'knight', position: [2, 7]) }
+
     let(:board_boxed_in_opposite) { [
       moved_pawn_white,
       knight1,
@@ -227,6 +231,15 @@ describe Pawn do
     let(:board_edges) { [
       moved_pawn_white_edge,
       moved_pawn_red_edge
+    ] }
+
+    let(:board_en_passant) { [
+      white_en_passant,
+      red_en_passant,
+      unmoved_pawn_white,
+      unmoved_pawn_red,
+      knight5,
+      knight6
     ] }
     
     context 'when the Pawn was moved and is surrounded by chess pieces that are of a different color' do
@@ -357,9 +370,11 @@ describe Pawn do
         allow(unmoved_pawn_white).to receive(:opponent_piece?).and_return(false, false, false, false, false, false, false)
         allow(unmoved_pawn_white).to receive(:out_of_bounds?).and_return(false, false, false)
         allow(unmoved_pawn_white).to receive(:king_or_same_color?).and_return(false, false, false, false)
+        allow(unmoved_pawn_white).to receive(:add_en_passant)
         allow(unmoved_pawn_red).to receive(:opponent_piece?).and_return(false, false, false, false, false, false, false)
         allow(unmoved_pawn_red).to receive(:out_of_bounds?).and_return(false, false, false)
         allow(unmoved_pawn_red).to receive(:king_or_same_color?).and_return(false, false, false, false)
+        allow(unmoved_pawn_red).to receive(:add_en_passant)
       end
 
       it 'possible_moves has two forward moves' do
@@ -434,6 +449,38 @@ describe Pawn do
         moved_pawn_red_edge.update_position([2, 0])
         moved_pawn_red_edge.update_possible_moves(board_edges)
         expect(moved_pawn_red_edge.possible_moves).to eq([[3, 0]])
+      end
+    end
+
+    context 'when there is a opportunity of an en_passant move while there are other chess pieces around' do
+      before do
+        allow(white_en_passant).to receive(:opponent_piece?).and_return(false, false, false, false, true)
+        allow(white_en_passant).to receive(:out_of_bounds?).and_return(false, false)
+        allow(white_en_passant).to receive(:king_or_same_color?).and_return(false, false)
+        
+        allow(red_en_passant).to receive(:opponent_piece?).and_return(false, false, false, false, true)
+        allow(red_en_passant).to receive(:out_of_bounds?).and_return(false, false)
+        allow(red_en_passant).to receive(:king_or_same_color?).and_return(false, false)
+      end
+      
+      it 'generates the correct set of moves and extra en passant move' do
+        white_en_passant.update_position([3, 6])
+        unmoved_pawn_red.update_position([3, 5])
+        white_en_passant.update_possible_moves(board_en_passant)
+        expect(white_en_passant.possible_moves).to eq([
+          [2, 6],
+          [2, 7],
+          [2, 5]
+        ])
+
+        red_en_passant.update_position([4, 2])
+        unmoved_pawn_white.update_position([4, 1])
+        red_en_passant.update_possible_moves(board_en_passant)
+        expect(red_en_passant.possible_moves).to eq([
+          [5, 2],
+          [5, 3],
+          [5, 1]
+        ])
       end
     end
   end
@@ -610,12 +657,12 @@ describe Pawn do
       end
 
       it 'no extra move is added to possible_moves' do
-        pawn_white.update_possible_moves(board_no_en_passant)
+        pawn_white.possible_moves = [[2, 1]]
         old_white_moves = pawn_white.possible_moves   
         pawn_white.add_en_passant(board_no_en_passant)
         expect(pawn_white.possible_moves).to eq(old_white_moves)
 
-        pawn_red.update_possible_moves(board_no_en_passant)
+        pawn_red.possible_moves = [[5, 6]]
         old_red_moves = pawn_red.possible_moves
         pawn_red.add_en_passant(board_no_en_passant)
         expect(pawn_red.possible_moves).to eq(old_red_moves)
@@ -629,14 +676,14 @@ describe Pawn do
       end
 
       it 'adds an extra move to possible_moves' do 
-        pawn_white.update_possible_moves(board_left_en_passant)
+        pawn_white.possible_moves = [[2, 1]]
         pawn_white.add_en_passant(board_left_en_passant)
         expect(pawn_white.possible_moves).to eq([
           [2, 1],
           [2, 0]
         ])
 
-        pawn_red.update_possible_moves(board_left_en_passant)
+        pawn_red.possible_moves = [[5, 6]]
         pawn_red.add_en_passant(board_left_en_passant)
         expect(pawn_red.possible_moves).to eq([
           [5, 6],
@@ -652,14 +699,14 @@ describe Pawn do
       end
 
       it 'adds an extra move to possible_moves' do 
-        pawn_white.update_possible_moves(board_right_en_passant)
+        pawn_white.possible_moves = [[2, 1]]
         pawn_white.add_en_passant(board_right_en_passant)
         expect(pawn_white.possible_moves).to eq([
           [2, 1],
           [2, 2]
         ])
 
-        pawn_red.update_possible_moves(board_right_en_passant)
+        pawn_red.possible_moves = [[5, 6]]
         pawn_red.add_en_passant(board_right_en_passant)
         expect(pawn_red.possible_moves).to eq([
           [5, 6],

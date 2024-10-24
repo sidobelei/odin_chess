@@ -51,7 +51,8 @@ attr_accessor :moved, :promoted, :opposite_row, :direction, :en_passant_moves
         next 
       end
       @possible_moves = new_moves
-    end 
+    end
+    add_en_passant(board)
   end
 
   def add_en_passant(board)
