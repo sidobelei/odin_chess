@@ -454,17 +454,17 @@ describe Pawn do
 
     context 'when there is a opportunity of an en_passant move while there are other chess pieces around' do
       before do
-        allow(white_en_passant).to receive(:opponent_piece?).and_return(false, false, false, false, true)
+        allow(white_en_passant).to receive(:opponent_piece?).and_return(false, false, false, false, true, false, true)
         allow(white_en_passant).to receive(:out_of_bounds?).and_return(false, false)
-        allow(white_en_passant).to receive(:king_or_same_color?).and_return(false, false)
+        allow(white_en_passant).to receive(:king_or_same_color?).and_return(false, false, false)
         
-        allow(red_en_passant).to receive(:opponent_piece?).and_return(false, false, false, false, true)
+        allow(red_en_passant).to receive(:opponent_piece?).and_return(false, false, false, false, true, false, true)
         allow(red_en_passant).to receive(:out_of_bounds?).and_return(false, false)
-        allow(red_en_passant).to receive(:king_or_same_color?).and_return(false, false)
+        allow(red_en_passant).to receive(:king_or_same_color?).and_return(false, false, false)
       end
       
       it 'generates the correct set of moves and extra en passant move' do
-        white_en_passant.update_position([3, 6])
+        white_en_passant.update_position([3, 6])#
         unmoved_pawn_red.update_position([3, 5])
         white_en_passant.update_possible_moves(board_en_passant)
         expect(white_en_passant.possible_moves).to eq([
@@ -613,6 +613,10 @@ describe Pawn do
     let(:rook_white_right) { double('Rook', color: 'white', name: 'R', type: 'rook', position: [5, 7], moved: 1) }
     let(:rook_red_left) { double('Rook', color: 'red', name: 'R', type: 'rook', position: [3, 0], moved: 1) }
     let(:bishop_red_right) { double('Bishop', color: 'red', name: 'B', type: 'bishop', position: [3, 2]) }
+    let(:knight_left_1) { double('Knight', color: 'white', name: 'N', type: 'knight', position: [2, 0]) }
+    let(:knight_right_2) { double('Knight', color: 'red', name: 'N', type: 'knight', position: [2, 2]) }
+    let(:knight_left_3) { double('Knight', color: 'red', name: 'N', type: 'knight', position: [5, 7]) }
+    let(:knight_right_4) { double('Knight', color: 'white', name: 'N', type: 'knight', position: [5, 5]) }
 
     before do
       pawn_white.update_position([4, 1])
@@ -650,10 +654,25 @@ describe Pawn do
       opposing_pawn_red_right
     ] }
 
+    let(:board_blocked_en_passant) { [
+      pawn_white,
+      pawn_red,
+      opposing_pawn_white_left,
+      opposing_pawn_red_left,
+      knight_left_1,
+      knight_left_3,
+      knight_right_2,
+      knight_right_4
+    ] }
+
     context 'when there is no opportunity for an en passant move' do
       before do
         allow(pawn_white).to receive(:remove_en_passant)
+        allow(pawn_white).to receive(:opponent_piece?).and_return(false, false)
+        allow(pawn_white).to receive(:king_or_same_color?).and_return(false, false)
         allow(pawn_red).to receive(:remove_en_passant)
+        allow(pawn_red).to receive(:opponent_piece?).and_return(false, false)
+        allow(pawn_red).to receive(:king_or_same_color?).and_return(false, false)
       end
 
       it 'no extra move is added to possible_moves' do
@@ -672,7 +691,11 @@ describe Pawn do
     context 'when there is an en passant opportunity to the left of the pawn' do
       before do
         allow(pawn_white).to receive(:remove_en_passant)
-        allow(pawn_red).to receive(:remove_en_passant)  
+        allow(pawn_white).to receive(:opponent_piece?).and_return(false, false)
+        allow(pawn_white).to receive(:king_or_same_color?).and_return(false, false)
+        allow(pawn_red).to receive(:remove_en_passant)
+        allow(pawn_red).to receive(:opponent_piece?).and_return(false, false)
+        allow(pawn_red).to receive(:king_or_same_color?).and_return(false, false)  
       end
 
       it 'adds an extra move to possible_moves' do 
@@ -695,7 +718,11 @@ describe Pawn do
     context 'when there is an en passant opportunity to the right of the pawn' do
       before do
         allow(pawn_white).to receive(:remove_en_passant)
-        allow(pawn_red).to receive(:remove_en_passant)  
+        allow(pawn_white).to receive(:opponent_piece?).and_return(false, false)
+        allow(pawn_white).to receive(:king_or_same_color?).and_return(false, false)
+        allow(pawn_red).to receive(:remove_en_passant)
+        allow(pawn_red).to receive(:opponent_piece?).and_return(false, false)
+        allow(pawn_red).to receive(:king_or_same_color?).and_return(false, false)  
       end
 
       it 'adds an extra move to possible_moves' do 
@@ -713,6 +740,39 @@ describe Pawn do
           [5, 7]
         ])           
       end     
+    end
+
+    context 'when there is an en passant opportunity but there is a chess piece in the desired destination' do
+      before do
+        allow(pawn_white).to receive(:remove_en_passant)
+        allow(pawn_white).to receive(:opponent_piece?).and_return(false, true)
+        allow(pawn_white).to receive(:king_or_same_color?).and_return(true)
+        allow(pawn_red).to receive(:remove_en_passant)
+        allow(pawn_red).to receive(:opponent_piece?).and_return(false, true)
+        allow(pawn_red).to receive(:king_or_same_color?).and_return(true)
+      end
+
+      it 'does not add extra en passant move to possible_moves' do
+        pawn_white.possible_moves = [
+          [2, 1],
+          [2, 2]
+        ]
+        pawn_white.add_en_passant(board_blocked_en_passant)
+        expect(pawn_white.possible_moves).to eq([
+          [2, 1],
+          [2, 2]
+        ])
+
+        pawn_red.possible_moves = [
+          [5, 6],
+          [5, 7]
+        ]
+        pawn_red.add_en_passant(board_blocked_en_passant)
+        expect(pawn_red.possible_moves).to eq([
+          [5, 6],
+          [5, 7]
+        ])
+      end
     end
   end
 end

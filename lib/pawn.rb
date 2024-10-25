@@ -61,9 +61,9 @@ attr_accessor :moved, :promoted, :opposite_row, :direction, :en_passant_moves
     on_right = [position[0], position[1] + 1]
     board.each do |piece|
       if piece.color != @color && piece.type == 'pawn' && piece.moved == 1
-        if piece.position == on_left 
+        if piece.position == on_left && (opponent_piece?(board, on_left) == false && king_or_same_color?(board, on_left) == false)
           @possible_moves << [position[0] + direction, position[1] - 1]
-        elsif piece.position == on_right
+        elsif piece.position == on_right && (opponent_piece?(board, on_right) == false && king_or_same_color?(board, on_right) == false)
           @possible_moves << [position[0] + direction, position[1] + 1]
         else
           next
