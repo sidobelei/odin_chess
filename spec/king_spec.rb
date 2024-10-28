@@ -31,4 +31,45 @@ describe King do
       end
     end
   end
+
+  describe '#update_position' do
+    subject(:unmoved_white_king) { described_class.new('white', [7, 4]) }
+    subject(:unmoved_red_king) { described_class.new('red', [0, 4]) }
+    subject(:moved_white_king) { described_class.new('white', [7, 4]) }
+    subject(:moved_red_king) { described_class.new('red', [0, 4]) }
+    
+    context 'when the King has not moved and is changing position' do
+      it 'position is updated and the moved attribute is one' do
+        unmoved_white_king.update_position([6, 4])
+        expect(unmoved_white_king.position).to eq([6, 4])
+        expect(unmoved_white_king.moved).to eq(1)
+        
+        unmoved_red_king.update_position([1, 4])
+        expect(unmoved_red_king.position).to eq([1, 4])
+        expect(unmoved_red_king.moved).to eq(1)
+      end
+    end
+
+    context 'when the King has moved previously and is changing position' do
+      it 'position is updated and the moved attribute increases by one' do
+        moved_white_king.update_position([6, 4])
+        moved_white_king.update_position([5, 4])
+        moved_white_king.update_position([4, 4])
+        expect(moved_white_king.position).to eq([4, 4])
+        expect(moved_white_king.moved).to eq(3)
+        moved_white_king.update_position([3, 4])
+        expect(moved_white_king.position).to eq([3, 4])
+        expect(moved_white_king.moved).to eq(4)
+        
+        moved_red_king.update_position([1, 4])
+        moved_red_king.update_position([2, 4])
+        moved_red_king.update_position([3, 4])
+        expect(moved_red_king.position).to eq([3, 4])
+        expect(moved_red_king.moved).to eq(3)
+        moved_red_king.update_position([4, 4])
+        expect(moved_red_king.position).to eq([4, 4])
+        expect(moved_red_king.moved).to eq(4)
+      end
+    end
+  end
 end
