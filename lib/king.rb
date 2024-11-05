@@ -1,7 +1,7 @@
 require_relative 'chess_piece'
 
 class King < ChessPiece
-  attr_accessor :moved
+  attr_accessor :moved, :castling
 
   def initialize(color, position) 
     super(color, 'K', 'king', position)
@@ -22,5 +22,10 @@ class King < ChessPiece
       end
     end
     return false
+  end
+  
+  def remove_castling
+    @possible_moves.delete("[0-0]")
+    @possible_moves.delete("[0-0-0]")
   end
 end
