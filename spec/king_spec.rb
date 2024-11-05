@@ -193,4 +193,124 @@ describe King do
       end
     end
   end
+
+  describe '#remove_castling' do
+    subject(:king_white) {described_class.new('white', [7, 4]) }
+    subject(:king_red) { described_class.new('red', [0, 4]) }
+    
+    context 'when there are two possible castling moves' do
+      it 'removes both castling moves' do
+        king_white.possible_moves = [
+          [6, 3],
+          [6, 4],
+          [6, 5],
+          [0, 5],
+          [0, 3],
+          '[0-0-0]',
+          '[0-0]'
+        ]
+        king_white.remove_castling
+        expect(king_white.possible_moves).to eq([
+          [6, 3],
+          [6, 4],
+          [6, 5],
+          [0, 5],
+          [0, 3]
+        ])
+
+        
+        king_red.possible_moves = [
+          [0, 5],
+          [1, 5],
+          [1, 4],
+          [1, 3],
+          [0, 3],
+          '[0-0-0]',
+          '[0-0]'
+        ]
+        king_red.remove_castling
+        expect(king_red.possible_moves).to eq([
+          [0, 5],
+          [1, 5],
+          [1, 4],
+          [1, 3],
+          [0, 3]
+        ])
+      end
+    end
+
+    context 'when there is only one possible castling move' do
+      it 'removes the one castling move' do
+        king_white.possible_moves = [
+          [6, 3],
+          [6, 4],
+          [6, 5],
+          [0, 5],
+          [0, 3],
+          '[0-0-0]'
+        ]
+        king_white.remove_castling
+        expect(king_white.possible_moves).to eq([
+          [6, 3],
+          [6, 4],
+          [6, 5],
+          [0, 5],
+          [0, 3]
+        ])
+
+        king_red.possible_moves = [
+          [0, 5],
+          [1, 5],
+          [1, 4],
+          [1, 3],
+          [0, 3],
+          '[0-0]'
+        ]
+        king_red.remove_castling
+        expect(king_red.possible_moves).to eq([
+          [0, 5],
+          [1, 5],
+          [1, 4],
+          [1, 3],
+          [0, 3]
+        ])
+      end
+    end
+
+    context 'when there are no possible castling moves' do
+      it 'removes nothing' do
+        king_white.possible_moves = [
+          [6, 3],
+          [6, 4],
+          [6, 5],
+          [0, 5],
+          [0, 3]
+        ]
+        king_white.remove_castling
+        expect(king_white.possible_moves).to eq([
+          [6, 3],
+          [6, 4],
+          [6, 5],
+          [0, 5],
+          [0, 3]
+        ])
+
+        king_red.possible_moves = [
+          [0, 5],
+          [1, 5],
+          [1, 4],
+          [1, 3],
+          [0, 3]
+        ]
+        king_red.remove_castling
+        expect(king_red.possible_moves).to eq([
+          [0, 5],
+          [1, 5],
+          [1, 4],
+          [1, 3],
+          [0, 3]
+        ])
+      end
+    end
+  end
 end
