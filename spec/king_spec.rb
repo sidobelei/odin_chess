@@ -313,4 +313,773 @@ describe King do
       end
     end
   end
+
+  describe '#add_castling' do
+    subject(:king_white) { described_class.new('white', [7, 4]) }
+    subject(:king_red) { described_class.new('red', [0, 4]) }
+    let(:unmoved_rook_white_left) { double('Rook', color: 'white', type: 'rook', position: [7, 0], moved: 0) }
+    let(:unmoved_rook_white_right) { double('Rook', color: 'white', type: 'rook', position: [7, 7], moved: 0) }
+    let(:unmoved_rook_red_left) { double('Rook', color: 'red', type: 'rook', position: [0, 0], moved: 0) }
+    let(:unmoved_rook_red_right) { double('Rook', color: 'red', type: 'rook', position: [0, 7], moved: 0) }
+    let(:moved_rook_white_left) { double('Rook', color: 'white', type: 'rook', position: [7, 2], moved: 1) }
+    let(:moved_rook_white_right) { double('Rook', color: 'white', type: 'rook', position: [7, 6], moved: 1) }
+    let(:moved_rook_red_left) { double('Rook', color: 'red', type: 'rook', position: [0, 1], moved: 1) }
+    let(:moved_rook_red_right) { double('Rook', color: 'red', type: 'rook', position: [0, 5], moved: 1) }
+    
+    let(:knight_white) { double('Knight', color: 'white', type: 'knight', position: [7, 1]) } 
+    let(:bishop_white) { double('Bishop', color: 'white', type: 'bishop', position: [7, 2]) }
+    let(:queen_white) { double('Queen', color: 'white', type: 'queen', position: [7, 3]) }
+    let(:bishop_red) { double('Bishop', color: 'red', type: 'bishop', position: [7, 5]) }
+    let(:knight_red) { double('Knight', color: 'red', type: 'knight', position: [7, 6]) }
+
+    let(:knight_red_2) { double('Knight', color: 'red', type: 'knight', position: [0, 1]) }
+    let(:bishop_white_2) { double('Bishop', color: 'white', type: 'bishop', position: [0, 2]) }
+    let(:queen_red) { double('Queen', color: 'red', type: 'queen', position: [0, 3]) }
+    let(:bishop_red_2) { double('Bishop', color: 'red', type: 'bishop', position: [0, 5]) }
+    let(:knight_white_2) { double('Knight', color: 'white', type: 'knight', position: [0, 6]) }
+
+    let(:board_unmoved_all_unblocked) {[
+      king_white,
+      king_red,
+      unmoved_rook_white_left,
+      unmoved_rook_white_right,
+      unmoved_rook_red_left,
+      unmoved_rook_red_right
+    ]}
+    let(:board_unmoved_king_unblocked) {[
+      king_white,
+      king_red,
+      moved_rook_white_left,
+      moved_rook_white_right,
+      moved_rook_red_left,
+      moved_rook_red_right
+    ]}
+    let(:board_unmoved_king_one_rook_unblocked) {[
+      king_white,
+      king_red,
+      unmoved_rook_white_left,
+      moved_rook_white_right,
+      moved_rook_red_left,
+      unmoved_rook_red_right
+    ]}
+    let(:board_unmoved_rooks_unblocked) {[
+      king_white,
+      king_red,
+      unmoved_rook_white_left,
+      unmoved_rook_white_right,
+      unmoved_rook_red_left,
+      unmoved_rook_red_right
+    ]}
+    let(:board_moved_all_unblocked) { [
+      king_white,
+      king_red,
+      moved_rook_white_left,
+      moved_rook_white_right,
+      moved_rook_red_left,
+      moved_rook_red_right
+    ] }
+
+    let(:board_unmoved_all_blocked_partial) { [
+      king_white,
+      king_red,
+      unmoved_rook_white_left,
+      unmoved_rook_white_right,
+      unmoved_rook_red_left,
+      unmoved_rook_red_right,
+      knight_white,
+      bishop_red,
+      queen_red,
+      knight_white_2
+    ] }
+    let(:board_unmoved_king_blocked_partial) { [
+      king_white,
+      king_red,
+      moved_rook_white_left,
+      moved_rook_white_right,
+      moved_rook_red_left,
+      moved_rook_red_right,
+      knight_white,
+      bishop_red,
+      queen_red,
+      knight_white_2
+    ] }
+    let(:board_unmoved_king_one_rook_blocked_partial) { [
+      king_white,
+      king_red,
+      moved_rook_white_left,
+      unmoved_rook_white_right,
+      unmoved_rook_red_left,
+      moved_rook_red_right,
+      knight_white,
+      bishop_red,
+      queen_red,
+      knight_white_2
+    ] }
+    let(:board_unmoved_rooks_blocked_partial) { [
+      king_white,
+      king_red,
+      unmoved_rook_white_left,
+      unmoved_rook_white_right,
+      unmoved_rook_red_left,
+      unmoved_rook_red_right,
+      knight_white,
+      bishop_red,
+      queen_red,
+      knight_white_2
+    ] }
+    let(:board_moved_all_blocked_partial) { [
+      king_white,
+      king_red,
+      moved_rook_white_left,
+      moved_rook_white_right,
+      moved_rook_red_left,
+      moved_rook_red_right,
+      knight_white,
+      bishop_red,
+      queen_red,
+      knight_white_2
+    ] }
+
+    let(:board_unmoved_all_blocked_all) { [
+      king_white,
+      king_red,
+      unmoved_rook_white_left,
+      unmoved_rook_white_right,
+      unmoved_rook_red_left,
+      unmoved_rook_red_right,
+      knight_white,
+      bishop_white,
+      queen_white,
+      bishop_red,
+      knight_red,
+      knight_red_2,
+      bishop_white_2,
+      queen_red,
+      bishop_red_2,
+      knight_white_2
+    ] }
+    let(:board_unmoved_king_blocked_all) { [
+      king_white,
+      king_red,
+      moved_rook_white_left,
+      moved_rook_white_right,
+      moved_rook_red_left,
+      moved_rook_red_right,
+      knight_white,
+      queen_white,
+      bishop_red,
+      bishop_white_2,
+      queen_red,
+      knight_white_2
+    ] }
+    let(:board_unmoved_king_one_rook_blocked_all) { [
+      king_white,
+      king_red,
+      unmoved_rook_white_left,
+      moved_rook_white_right,
+      unmoved_rook_red_left,
+      moved_rook_red_right,
+      knight_white,
+      bishop_white,
+      queen_white,
+      bishop_red,
+      knight_red_2,
+      bishop_white_2,
+      queen_red,
+      knight_white_2
+    ] }
+    let(:board_unmoved_rooks_blocked_all) { [
+      king_white,
+      king_red,
+      unmoved_rook_white_left,
+      unmoved_rook_white_right,
+      unmoved_rook_red_left,
+      unmoved_rook_red_right,
+      knight_white,
+      bishop_white,
+      queen_white,
+      bishop_red,
+      knight_red,
+      knight_red_2,
+      bishop_white_2,
+      queen_red,
+      bishop_red_2,
+      knight_white_2
+    ] }
+    let(:board_moved_all_blocked_all) { [
+      king_white,
+      king_red,
+      moved_rook_white_left,
+      moved_rook_white_right,
+      moved_rook_red_left,
+      moved_rook_red_right,
+      knight_white,
+      queen_white,
+      bishop_red,
+      bishop_white_2,
+      queen_red,
+      knight_white_2
+    ] }
+
+    context 'when the paths to the rook is unblocked' do
+      context 'when the king and rooks have not moved' do
+        before do
+          allow(king_white).to receive(:remove_castling)
+          allow(king_red).to receive(:remove_castling)
+        end
+
+        it 'two moves are added to possible_moves' do
+          king_white.possible_moves = [
+            [6, 3],
+            [6, 4],
+            [6, 5],
+            [7, 3]
+          ]
+          king_white.add_castling(board_unmoved_all_unblocked)
+          expect(king_white.possible_moves).to eq([
+            [6, 3],
+            [6, 4],
+            [6, 5],
+            [7, 3],
+            '[0-0-0]',
+            '[0-0]'
+          ])
+
+          king_red.possible_moves = [
+            [0, 5],
+            [1, 5],
+            [1, 4],
+            [1, 3],
+            [0, 3]
+          ]
+          king_red.add_castling(board_unmoved_all_unblocked)
+          expect(king_red.possible_moves).to eq([
+            [0, 5],
+            [1, 5],
+            [1, 4],
+            [1, 3],
+            [0, 3],
+            '[0-0-0]',
+            '[0-0]'
+          ])  
+        end
+      end
+
+      context 'when the king has not moved' do
+        before do
+          allow(king_white).to receive(:remove_castling)
+          allow(king_red).to receive(:remove_castling)
+        end
+
+        it 'no moves are added to possible_moves' do
+          king_white.possible_moves = [
+            [6, 3],
+            [6, 4],
+            [6, 5],
+            [7, 5],
+            [7, 3]
+          ]
+          king_white.add_castling(board_unmoved_king_unblocked)
+          expect(king_white.possible_moves).to eq([
+            [6, 3],
+            [6, 4],
+            [6, 5],
+            [7, 5],
+            [7, 3]
+          ])
+
+          king_red.possible_moves = [
+            [1, 5],
+            [1, 4],
+            [1, 3],
+            [0, 3]
+          ]
+          king_red.add_castling(board_unmoved_king_unblocked)
+          expect(king_red.possible_moves).to eq([
+            [1, 5],
+            [1, 4],
+            [1, 3],
+            [0, 3]
+          ])
+        end
+      end
+
+      context 'when the king and one rook has not moved' do
+        before do
+          allow(king_white).to receive(:remove_castling)
+          allow(king_red).to receive(:remove_castling)
+        end
+
+        it 'one move is added to possible_moves' do
+          king_white.possible_moves = [
+            [6, 3],
+            [6, 4],
+            [6, 5],
+            [7, 5],
+            [7, 3]
+          ]
+          king_white.add_castling(board_unmoved_king_one_rook_unblocked) 
+          expect(king_white.possible_moves).to eq([
+            [6, 3],
+            [6, 4],
+            [6, 5],
+            [7, 5],
+            [7, 3],
+            '[0-0-0]'
+          ])
+
+          king_red.possible_moves = [
+            [0, 5],
+            [1, 5],
+            [1, 4],
+            [1, 3],
+            [0, 3]
+          ]
+          king_red.add_castling(board_unmoved_king_one_rook_unblocked)
+          expect(king_red.possible_moves).to eq([
+            [0, 5],
+            [1, 5],
+            [1, 4],
+            [1, 3],
+            [0, 3],
+            '[0-0]'
+          ])
+        end
+      end
+
+      context 'when the rooks have not moved and the king has' do
+        before do
+          allow(king_white).to receive(:remove_castling)
+          allow(king_red).to receive(:remove_castling)
+        end
+
+        it 'no moves are added to possible_moves' do
+          king_white.update_position([7, 4])
+          king_white.possible_moves = [
+            [6, 3],
+            [6, 4],
+            [6, 5],
+            [7, 5],
+            [7, 3]
+          ]
+          king_white.add_castling(board_unmoved_rooks_unblocked) 
+          expect(king_white.possible_moves).to eq([
+            [6, 3],
+            [6, 4],
+            [6, 5],
+            [7, 5],
+            [7, 3]
+          ])
+
+          king_red.update_position([0, 4])
+          king_red.possible_moves = [
+            [0, 5],
+            [1, 5],
+            [1, 4],
+            [1, 3],
+            [0, 3]
+          ]
+          king_red.add_castling(board_unmoved_rooks_unblocked) 
+          expect(king_red.possible_moves).to eq([
+            [0, 5],
+            [1, 5],
+            [1, 4],
+            [1, 3],
+            [0, 3]
+          ])
+        end
+      end
+
+      context 'when the rooks and the king have moved' do
+        before do
+          allow(king_white).to receive(:remove_castling)
+          allow(king_red).to receive(:remove_castling)
+        end
+
+        it 'no moves are added to possible_moves' do
+          king_white.update_position([7, 4])
+          king_white.possible_moves = [
+            [6, 3],
+            [6, 4],
+            [6, 5],
+            [7, 5],
+            [7, 3]
+          ]
+          king_white.add_castling(board_unmoved_rooks_unblocked) 
+          expect(king_white.possible_moves).to eq([
+            [6, 3],
+            [6, 4],
+            [6, 5],
+            [7, 5],
+            [7, 3]
+          ])
+
+          king_red.update_position([0, 4])
+          king_red.possible_moves = [
+            [1, 5],
+            [1, 4],
+            [1, 3],
+            [0, 3]
+          ]
+          king_red.add_castling(board_unmoved_rooks_unblocked) 
+          expect(king_red.possible_moves).to eq([
+            [1, 5],
+            [1, 4],
+            [1, 3],
+            [0, 3]
+          ])
+        end
+      end
+    end
+
+    context 'when the paths to some of the rooks are partially blocked' do
+      context 'when the king and rooks have not moved' do
+        before do
+          allow(king_white).to receive(:remove_castling)
+          allow(king_red).to receive(:remove_castling)
+        end
+
+        it 'no moves are added to possible_moves' do
+          king_white.possible_moves = [
+            [6, 3],
+            [6, 4],
+            [6, 5],
+            [7, 3]
+          ]
+          king_white.add_castling(board_unmoved_all_blocked_partial)
+          expect(king_white.possible_moves).to eq([
+            [6, 3],
+            [6, 4],
+            [6, 5],
+            [7, 3]
+          ])
+
+          king_red.possible_moves = [
+            [1, 5],
+            [1, 4],
+            [1, 3]
+          ] 
+          king_red.add_castling(board_unmoved_all_blocked_partial)
+          expect(king_red.possible_moves).to eq([
+            [1, 5],
+            [1, 4],
+            [1, 3]
+          ])
+        end
+      end
+
+      context 'when the king has not moved' do
+        before do
+          allow(king_white).to receive(:remove_castling)
+          allow(king_red).to receive(:remove_castling)
+        end
+
+        it 'no moves are added to possible_moves' do
+          king_white.possible_moves = [
+            [6, 3],
+            [6, 4],
+            [6, 5],
+            [7, 3]
+          ]
+          king_white.add_castling(board_unmoved_king_blocked_partial)
+          expect(king_white.possible_moves).to eq([
+            [6, 3],
+            [6, 4],
+            [6, 5],
+            [7, 3]
+          ])
+          
+          king_red.possible_moves = [
+            [1, 5],
+            [1, 4],
+            [1, 3]
+          ]
+          king_red.add_castling(board_unmoved_king_blocked_partial)
+          expect(king_red.possible_moves).to eq([
+            [1, 5],
+            [1, 4],
+            [1, 3]
+          ])
+        end
+      end
+
+      context 'when the king and one rook has not moved' do
+        before do
+          allow(king_white).to receive(:remove_castling)
+          allow(king_red).to receive(:remove_castling)
+        end
+
+        it 'no moves are added to possible_moves' do
+          king_white.possible_moves = [
+            [6, 3],
+            [6, 4],
+            [6, 5],
+            [7, 3]
+          ]
+          king_white.add_castling(board_unmoved_king_one_rook_blocked_partial)
+          expect(king_white.possible_moves).to eq([
+            [6, 3],
+            [6, 4],
+            [6, 5],
+            [7, 3]
+          ])
+
+          king_red.possible_moves = [
+            [1, 5],
+            [1, 4],
+            [1, 3]
+          ]
+          king_red.add_castling(board_unmoved_king_one_rook_blocked_partial)
+          expect(king_red.possible_moves).to eq([
+            [1, 5],
+            [1, 4],
+            [1, 3]
+          ])
+        end
+      end
+
+      context 'when the rooks have not moved and the king has' do
+        before do
+          allow(king_white).to receive(:remove_castling)
+          allow(king_red).to receive(:remove_castling)
+        end
+
+        it 'no moves are added to possible_moves' do
+          king_white.update_position([7, 4])
+          king_white.possible_moves = [
+            [6, 3],
+            [6, 4],
+            [6, 5],
+            [7, 3]
+          ]
+          king_white.add_castling(board_unmoved_rooks_blocked_partial)
+          expect(king_white.possible_moves).to eq([
+            [6, 3],
+            [6, 4],
+            [6, 5],
+            [7, 3]
+          ])
+
+          king_red.update_position([0, 4])
+          king_red.possible_moves = [
+            [1, 5],
+            [1, 4],
+            [1, 3]
+          ]
+          expect(king_red.possible_moves).to eq([
+            [1, 5],
+            [1, 4],
+            [1, 3]
+          ])
+        end
+      end
+
+      context 'when the rooks and the king have moved' do
+        before do
+          allow(king_white).to receive(:remove_castling)
+          allow(king_red).to receive(:remove_castling)
+        end
+
+        it 'no moves are added to possible_moves' do
+          king_white.update_position([7, 4])
+          king_white.possible_moves = [
+            [6, 3],
+            [6, 4],
+            [6, 5],
+            [7, 3]
+          ]
+          king_white.add_castling(board_moved_all_blocked_partial)
+          expect(king_white.possible_moves).to eq([
+            [6, 3],
+            [6, 4],
+            [6, 5],
+            [7, 3]
+          ])
+
+          king_red.update_position([0, 4])
+          king_red.possible_moves = [
+            [1, 5],
+            [1, 4],
+            [1, 3]
+          ]
+          king_red.add_castling(board_moved_all_blocked_partial)
+          expect(king_red.possible_moves).to eq([
+            [1, 5],
+            [1, 4],
+            [1, 3]
+          ])
+        end
+      end
+    end
+
+    context 'when the paths to the rooks are completely blocked' do
+      context 'when the king and rooks have not moved' do
+        before do
+          allow(king_white).to receive(:remove_castling)
+          allow(king_red).to receive(:remove_castling)
+        end
+
+        it 'two moves are added to possible_moves' do
+          king_white.possible_moves = [
+            [6, 3],
+            [6, 4],
+            [6, 5]
+          ]
+          king_white.add_castling(board_unmoved_all_blocked_all)
+          expect(king_white.possible_moves).to eq([
+            [6, 3],
+            [6, 4],
+            [6, 5]
+          ])
+          
+          king_red.possible_moves = [
+            [1, 5],
+            [1, 4],
+            [1, 3]
+          ]
+          king_red.add_castling(board_unmoved_all_blocked_all)
+          expect(king_red.possible_moves).to eq([
+            [1, 5],
+            [1, 4],
+            [1, 3]
+          ])
+        end
+      end
+
+      context 'when the king has not moved' do
+        before do
+          allow(king_white).to receive(:remove_castling)
+          allow(king_red).to receive(:remove_castling)
+        end
+
+        it 'no moves are added to possible_moves' do
+          king_white.possible_moves = [
+            [6, 3],
+            [6, 4],
+            [6, 5]
+          ]
+          king_white.add_castling(board_unmoved_king_blocked_all)
+          expect(king_white.possible_moves).to eq([
+            [6, 3],
+            [6, 4],
+            [6, 5]
+          ])
+
+          king_red.possible_moves = [
+            [1, 5],
+            [1, 4],
+            [1, 3]
+          ]
+          king_red.add_castling(board_unmoved_king_blocked_all)
+          expect(king_red.possible_moves).to eq([
+            [1, 5],
+            [1, 4],
+            [1, 3]
+          ])
+        end
+      end
+
+      context 'when the king and one rook has not moved' do
+        before do
+          allow(king_white).to receive(:remove_castling)
+          allow(king_red).to receive(:remove_castling)
+        end
+
+        it 'one move is added to possible_moves' do
+          king_white.possible_moves = [
+            [6, 3],
+            [6, 4],
+            [6, 5]
+          ]
+          king_white.add_castling(board_unmoved_king_one_rook_blocked_all)
+          expect(king_white.possible_moves).to eq([
+            [6, 3],
+            [6, 4],
+            [6, 5]
+          ])
+          
+          king_red.possible_moves = [
+            [1, 5],
+            [1, 4],
+            [1, 3]
+          ]
+          king_red.add_castling(board_unmoved_king_one_rook_blocked_all)
+          expect(king_red.possible_moves).to eq([
+            [1, 5],
+            [1, 4],
+            [1, 3]
+          ])
+        end
+      end
+
+      context 'when the rooks have not moved and the king has' do
+        before do
+          allow(king_white).to receive(:remove_castling)
+          allow(king_red).to receive(:remove_castling)
+        end
+
+        it 'no moves are added to possible_moves' do
+          king_white.update_position([7, 4])
+          king_white.possible_moves = [
+            [6, 3],
+            [6, 4],
+            [6, 5]
+          ]
+          king_white.add_castling(board_unmoved_rooks_blocked_all)
+          expect(king_white.possible_moves).to eq([
+            [6, 3],
+            [6, 4],
+            [6, 5]
+          ])
+          
+          king_red.update_position([0, 4])
+          king_red.possible_moves = [
+            [1, 5],
+            [1, 4],
+            [1, 3]
+          ]
+          king_red.add_castling(board_unmoved_rooks_blocked_all)
+          expect(king_red.possible_moves).to eq([
+            [1, 5],
+            [1, 4],
+            [1, 3]
+          ])
+        end
+      end
+      context 'when the rooks and the king have moved' do
+        before do
+          allow(king_white).to receive(:remove_castling)
+          allow(king_red).to receive(:remove_castling)
+        end
+        
+        it 'no moves are added to possible_moves' do
+          king_white.update_position([7, 4])
+          king_white.possible_moves = [
+            [6, 3],
+            [6, 4],
+            [6, 5]
+          ]
+          king_white.add_castling(board_moved_all_blocked_all)
+          expect(king_white.possible_moves).to eq([
+            [6, 3],
+            [6, 4],
+            [6, 5]
+          ])
+          
+          king_red.update_position([0, 4])
+          king_red.possible_moves = [
+            [1, 5],
+            [1, 4],
+            [1, 3]
+          ]
+          king_red.add_castling(board_moved_all_blocked_all)
+          expect(king_red.possible_moves).to eq([
+            [1, 5],
+            [1, 4],
+            [1, 3]
+          ])
+        end
+      end
+    end
+  end
 end
