@@ -23,7 +23,28 @@ class King < ChessPiece
     end
     return false
   end
-  
+
+  def add_castling(board)
+    remove_castling
+    if moved == 0
+      directions = [-1, 1]
+      directions.each do |direction|
+        space = 1
+        while space < 5
+          temp = [position[0], position[1] + (direction * space)]
+          if space == 4 && direction == -1 && board.any? {|piece| piece.type == 'rook' && piece.color == color && piece.moved == 0 && piece.position == temp}
+            @possible_moves << '[0-0-0]'
+          elsif space == 3 && direction == 1 && board.any? {|piece| piece.type == 'rook' && piece.color == color && piece.moved == 0 && piece.position == temp}
+            @possible_moves << '[0-0]'
+          else
+            break if board.any? {|piece| piece.position == temp}          
+          end
+          space += 1
+        end
+      end
+    end
+  end
+
   def remove_castling
     @possible_moves.delete("[0-0]")
     @possible_moves.delete("[0-0-0]")
