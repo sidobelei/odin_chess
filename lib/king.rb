@@ -16,6 +16,10 @@ class King < ChessPiece
   def in_check?(board, pos)
     board.each do |piece|
       piece.possible_moves.each do |move|
+        if piece == self
+          next
+        end
+
         if move == pos
           return true 
         end
@@ -26,7 +30,7 @@ class King < ChessPiece
 
   def add_castling(board)
     remove_castling
-    if moved == 0
+    if moved == 0 && in_check?(board, @position) == false
       directions = [-1, 1]
       directions.each do |direction|
         space = 1
@@ -37,7 +41,7 @@ class King < ChessPiece
           elsif space == 3 && direction == 1 && board.any? {|piece| piece.type == 'rook' && piece.color == color && piece.moved == 0 && piece.position == temp}
             @possible_moves << '[0-0]'
           else
-            break if board.any? {|piece| piece.position == temp}          
+            break if board.any? {|piece| piece.position == temp} || in_check?(board, temp) == true          
           end
           space += 1
         end

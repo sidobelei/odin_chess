@@ -317,26 +317,26 @@ describe King do
   describe '#add_castling' do
     subject(:king_white) { described_class.new('white', [7, 4]) }
     subject(:king_red) { described_class.new('red', [0, 4]) }
-    let(:unmoved_rook_white_left) { double('Rook', color: 'white', type: 'rook', position: [7, 0], moved: 0) }
-    let(:unmoved_rook_white_right) { double('Rook', color: 'white', type: 'rook', position: [7, 7], moved: 0) }
-    let(:unmoved_rook_red_left) { double('Rook', color: 'red', type: 'rook', position: [0, 0], moved: 0) }
-    let(:unmoved_rook_red_right) { double('Rook', color: 'red', type: 'rook', position: [0, 7], moved: 0) }
-    let(:moved_rook_white_left) { double('Rook', color: 'white', type: 'rook', position: [7, 2], moved: 1) }
-    let(:moved_rook_white_right) { double('Rook', color: 'white', type: 'rook', position: [7, 6], moved: 1) }
-    let(:moved_rook_red_left) { double('Rook', color: 'red', type: 'rook', position: [0, 1], moved: 1) }
-    let(:moved_rook_red_right) { double('Rook', color: 'red', type: 'rook', position: [0, 5], moved: 1) }
+    let(:unmoved_rook_white_left) { double('Rook', color: 'white', type: 'rook', position: [7, 0], moved: 0, possible_moves: []) }
+    let(:unmoved_rook_white_right) { double('Rook', color: 'white', type: 'rook', position: [7, 7], moved: 0, possible_moves: []) }
+    let(:unmoved_rook_red_left) { double('Rook', color: 'red', type: 'rook', position: [0, 0], moved: 0, possible_moves: []) }
+    let(:unmoved_rook_red_right) { double('Rook', color: 'red', type: 'rook', position: [0, 7], moved: 0, possible_moves: []) }
+    let(:moved_rook_white_left) { double('Rook', color: 'white', type: 'rook', position: [7, 2], moved: 1, possible_moves: []) }
+    let(:moved_rook_white_right) { double('Rook', color: 'white', type: 'rook', position: [7, 6], moved: 1, possible_moves: []) }
+    let(:moved_rook_red_left) { double('Rook', color: 'red', type: 'rook', position: [0, 1], moved: 1, possible_moves: []) }
+    let(:moved_rook_red_right) { double('Rook', color: 'red', type: 'rook', position: [0, 5], moved: 1, possible_moves: []) }
     
-    let(:knight_white) { double('Knight', color: 'white', type: 'knight', position: [7, 1]) } 
-    let(:bishop_white) { double('Bishop', color: 'white', type: 'bishop', position: [7, 2]) }
-    let(:queen_white) { double('Queen', color: 'white', type: 'queen', position: [7, 3]) }
-    let(:bishop_red) { double('Bishop', color: 'red', type: 'bishop', position: [7, 5]) }
-    let(:knight_red) { double('Knight', color: 'red', type: 'knight', position: [7, 6]) }
+    let(:knight_white) { double('Knight', color: 'white', type: 'knight', position: [7, 1], possible_moves: []) } 
+    let(:bishop_white) { double('Bishop', color: 'white', type: 'bishop', position: [7, 2], possible_moves: []) }
+    let(:queen_white) { double('Queen', color: 'white', type: 'queen', position: [7, 3], possible_moves: []) }
+    let(:bishop_red) { double('Bishop', color: 'red', type: 'bishop', position: [7, 5], possible_moves: []) }
+    let(:knight_red) { double('Knight', color: 'red', type: 'knight', position: [7, 6], possible_moves: []) }
 
-    let(:knight_red_2) { double('Knight', color: 'red', type: 'knight', position: [0, 1]) }
-    let(:bishop_white_2) { double('Bishop', color: 'white', type: 'bishop', position: [0, 2]) }
-    let(:queen_red) { double('Queen', color: 'red', type: 'queen', position: [0, 3]) }
-    let(:bishop_red_2) { double('Bishop', color: 'red', type: 'bishop', position: [0, 5]) }
-    let(:knight_white_2) { double('Knight', color: 'white', type: 'knight', position: [0, 6]) }
+    let(:knight_red_2) { double('Knight', color: 'red', type: 'knight', position: [0, 1], possible_moves: []) }
+    let(:bishop_white_2) { double('Bishop', color: 'white', type: 'bishop', position: [0, 2], possible_moves: []) }
+    let(:queen_red) { double('Queen', color: 'red', type: 'queen', position: [0, 3], possible_moves: []) }
+    let(:bishop_red_2) { double('Bishop', color: 'red', type: 'bishop', position: [0, 5], possible_moves: []) }
+    let(:knight_white_2) { double('Knight', color: 'white', type: 'knight', position: [0, 6], possible_moves: []) }
 
     let(:board_unmoved_all_unblocked) {[
       king_white,
@@ -521,7 +521,7 @@ describe King do
       knight_white_2
     ] }
 
-    context 'when the paths to the rook is unblocked' do
+    context 'when the paths to the rook is unblocked and the King is not in check' do
       context 'when the king and rooks have not moved' do
         before do
           allow(king_white).to receive(:remove_castling)
@@ -533,6 +533,7 @@ describe King do
             [6, 3],
             [6, 4],
             [6, 5],
+            [7, 5],
             [7, 3]
           ]
           king_white.add_castling(board_unmoved_all_unblocked)
@@ -540,6 +541,7 @@ describe King do
             [6, 3],
             [6, 4],
             [6, 5],
+            [7, 5],
             [7, 3],
             '[0-0-0]',
             '[0-0]'
@@ -732,7 +734,7 @@ describe King do
       end
     end
 
-    context 'when the paths to some of the rooks are partially blocked' do
+    context 'when the paths to some of the rooks are partially blocked and the King is not in check' do
       context 'when the king and rooks have not moved' do
         before do
           allow(king_white).to receive(:remove_castling)
@@ -912,7 +914,7 @@ describe King do
       end
     end
 
-    context 'when the paths to the rooks are completely blocked' do
+    context 'when the paths to the rooks are completely blocked and the King is not in check' do
       context 'when the king and rooks have not moved' do
         before do
           allow(king_white).to receive(:remove_castling)
