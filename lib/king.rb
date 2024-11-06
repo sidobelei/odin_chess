@@ -20,7 +20,7 @@ class King < ChessPiece
           next
         end
 
-        if move == pos
+        if move == pos && piece.color != @color
           return true 
         end
       end
