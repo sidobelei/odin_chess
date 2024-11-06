@@ -1,7 +1,7 @@
 require_relative 'chess_piece'
 
 class King < ChessPiece
-  attr_accessor :moved, :castling
+  attr_accessor :moved
 
   def initialize(color, position) 
     super(color, 'K', 'king', position)
