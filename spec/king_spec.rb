@@ -338,6 +338,9 @@ describe King do
     let(:bishop_red_2) { double('Bishop', color: 'red', type: 'bishop', position: [0, 5], possible_moves: []) }
     let(:knight_white_2) { double('Knight', color: 'white', type: 'knight', position: [0, 6], possible_moves: []) }
 
+    let(:rook_check) { double('Rook', color: 'red', type: 'rook', position: [5, 2], possible_moves: [[6, 2], [7, 2]]) }
+    let(:knight_check) { double('Knight', color: 'red', type: 'knight', position: [5, 6], possible_moves: [[7, 5], [6, 4]]) }
+
     let(:board_unmoved_all_unblocked) {[
       king_white,
       king_red,
@@ -520,6 +523,14 @@ describe King do
       queen_red,
       knight_white_2
     ] }
+
+    let(:board_in_check) {[
+      king_white,
+      unmoved_rook_white_left,
+      unmoved_rook_white_right,
+      rook_check,
+      knight_check
+    ]}
 
     context 'when the paths to the rook is unblocked and the King is not in check' do
       context 'when the king and rooks have not moved' do
@@ -1083,5 +1094,25 @@ describe King do
         end
       end
     end
+
+    context 'when the paths to the rooks are clear but the King is in check' do
+      before do
+        allow(king_white).to receive(:remove_castling)
+      end
+
+      it 'no moves are added to possible_moves' do
+         king_white.possible_moves = [
+            [6, 3],
+            [6, 5],
+            [7, 3]
+         ]
+         king_white.add_castling(board_in_check)
+         expect(king_white.possible_moves).to eq([
+            [6, 3],
+            [6, 5],
+            [7, 3]
+         ])
+      end
+   end
   end
 end
