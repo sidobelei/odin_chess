@@ -942,7 +942,7 @@ describe King do
           allow(king_red).to receive(:remove_castling)
         end
 
-        it 'two moves are added to possible_moves' do
+        it 'no moves are added to possible_moves' do
           king_white.possible_moves = [
             [6, 3],
             [6, 4],
@@ -1008,7 +1008,7 @@ describe King do
           allow(king_red).to receive(:remove_castling)
         end
 
-        it 'one move is added to possible_moves' do
+        it 'no moves are added to possible_moves' do
           king_white.possible_moves = [
             [6, 3],
             [6, 4],
