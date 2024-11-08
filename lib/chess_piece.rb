@@ -1,4 +1,8 @@
+require_relative 'chess_utilities'
+
 class ChessPiece 
+  include ChessUtilites
+  
   attr_accessor :color, :name, :position, :possible_moves, :type
 
   def initialize(color, name, type, position)
