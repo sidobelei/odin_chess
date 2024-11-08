@@ -24,7 +24,7 @@ describe Bishop do
   end
 
   describe '#update_possible_moves' do
-    let(:bishop) { described_class.new('white', [3, 3]) }
+    subject(:bishop) { described_class.new('white', [3, 3]) }
     let(:king1) { double("King", color: 'red', name: 'K', type: 'king', position: [0, 1]) }
     let(:rook1) { double("Rook", color: 'red', name: 'R', type: 'rook', position: [0, 2]) }
     let(:rook2) { double("Rook", color: 'red', name: 'R', type: 'rook', position: [0, 3]) }
