@@ -44,11 +44,10 @@ class King < ChessPiece
   
   def in_check?(board, pos)
     board.each do |piece|
+      if piece == self
+        next
+      end
       piece.possible_moves.each do |move|
-        if piece == self
-          next
-        end
-
         if move == pos && piece.color != @color
           return true 
         end
