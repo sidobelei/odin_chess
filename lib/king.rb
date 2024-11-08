@@ -20,6 +20,28 @@ class King < ChessPiece
     @moved += 1
   end
 
+  def update_possible_moves(board)
+    new_moves = []
+    movement = [
+      [-1, -1],
+      [-1, 0],
+      [-1, 1],
+      [0, 1],
+      [1, 1],
+      [1, 0],
+      [1, -1],
+      [0, -1]
+    ]
+    movement.each do |move|
+      temp = [position[0] + move[0], position[1] + move[1]]
+      unless in_check?(board, temp) || opponent_piece?(board, temp) || king_or_same_color?(board, temp) || out_of_bounds?(temp)
+        new_moves << temp
+      end
+    end
+    @possible_moves = new_moves
+    add_castling(board) 
+  end
+  
   def in_check?(board, pos)
     board.each do |piece|
       piece.possible_moves.each do |move|
