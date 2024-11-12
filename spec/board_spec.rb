@@ -46,6 +46,11 @@ describe Board do
   end
 
   describe '#initialize' do
-    
+    context 'when a new Board object is initialized' do
+      it 'calls the initialize_board method to create a new chess board' do
+        expect_any_instance_of(Board).to receive(:initialize_board).once
+        Board.new
+      end
+    end
   end
 end
