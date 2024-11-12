@@ -6,7 +6,10 @@ require_relative 'rook'
 require_relative 'pawn'
 
 class Board
+  attr_accessor :display
+
   def initialize
+    @display = initialize_board 
   end
 
   def initialize_board
