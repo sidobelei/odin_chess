@@ -35,5 +35,25 @@ class Board
     end
     return board
   end
-end
 
+  def to_s
+    board_string = "   +---+---+---+---+---+---+---+---+\n"
+    row = 0
+    for i in (8).downto(1)
+      board_string = board_string + "#{i}  |"
+      for j in (0..7)
+        if display.any?{ |piece| piece.position == [row, j] }
+          square = display.find_index { |piece| piece.position == [row, j] }
+          piece = display[square].name 
+          board_string = board_string + " #{piece} |"
+        else
+          board_string = board_string + "   |"
+        end
+      end
+      board_string = board_string + "\n   +---+---+---+---+---+---+---+---+\n"
+      row += 1
+    end
+    board_string = board_string + "     a   b   c   d   e   f   g   h\n\n"
+    return board_string
+  end
+end
