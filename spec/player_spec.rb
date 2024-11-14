@@ -36,4 +36,57 @@ describe Player do
       end
     end
   end
+
+  describe '#valid_move?' do
+    let(:player_color) { 'red' }
+    let(:player_pieces) { [
+      double(type: 'king', color: player_color, position: [0, 4], possible_moves: []),
+      double(type: 'queen', color: player_color, position: [0, 3], possible_moves: []),
+      double(type: 'bishop', color: player_color, position: [0, 2], possible_moves: []),
+      double(type: 'bishop', color: player_color, position: [0, 5], possible_moves: []),
+      double(type: 'knight', color: player_color, position: [0, 1], possible_moves: [[2, 0], [2, 2]]),
+      double(type: 'knight', color: player_color, position: [0, 6], possible_moves: [[2, 5], [2, 7]]),
+      double(type: 'rook', color: player_color, position: [0, 0], possible_moves: []),
+      double(type: 'rook', color: player_color, position: [0, 7], possible_moves: []),
+      double(type: 'pawn', color: player_color, position: [1, 0], possible_moves: [[2, 0], [3, 0]]),
+      double(type: 'pawn', color: player_color, position: [1, 1], possible_moves: [[2, 1], [3, 1]]),
+      double(type: 'pawn', color: player_color, position: [1, 2], possible_moves: [[2, 2], [3, 2]]),
+      double(type: 'pawn', color: player_color, position: [1, 3], possible_moves: [[2, 3], [3, 3]]),
+      double(type: 'pawn', color: player_color, position: [1, 4], possible_moves: [[2, 4], [3, 4]]),
+      double(type: 'pawn', color: player_color, position: [1, 5], possible_moves: [[2, 5], [3, 5]]),
+      double(type: 'pawn', color: player_color, position: [1, 6], possible_moves: [[2, 6], [3, 6]]),
+      double(type: 'pawn', color: player_color, position: [1, 7], possible_moves: [[2, 7], [3, 7]])
+    ] }
+    
+    subject(:player) { described_class.new(player_color, player_pieces)}
+    
+    context 'when there is no chess piece at that position and the move is invalid' do
+      it 'returns false' do
+        player.my_pieces = player_pieces
+        expect(player.valid_move?([7, 4], [4, 2])).to eq(false)
+      end
+    end
+
+    context 'when there is no chess piece at that position and the move is valid' do
+      it 'returns false' do
+        player.my_pieces = player_pieces
+        expect(player.valid_move?([6, 0], [2, 0])).to eq(false)
+      end
+    end
+
+    context 'when there is a chess piece at that position but the move is invalid' do
+      it 'returns false' do
+        player.my_pieces = player_pieces
+        expect(player.valid_move?([1, 7], [5, 6])).to eq(false)
+        expect(player.valid_move?([0, 4], [3, 5])).to eq(false)
+      end
+    end
+
+    context 'when there is a chess piece at that position and it is a valid move' do
+      it 'returns true' do
+        player.my_pieces = player_pieces
+        expect(player.valid_move?([0, 6], [2, 7])).to eq(true)
+      end
+    end
+  end
 end
