@@ -37,6 +37,23 @@ describe Player do
     end
   end
 
+  describe 'convert_to_coords' do
+    subject(:player) { described_class.new('white', [double(type: 'king', color: 'white', position: [7, 4])]) }
+    
+    context 'when a regular move is made' do
+      it 'converts the string to the correct position and new location' do
+        expect(player.convert_to_coords('e1, d2')).to eq([[7, 4], [6, 3]])
+      end
+    end
+
+    context 'when a castling move is made' do
+      it 'converts the string to the correct position and new location' do
+        expect(player.convert_to_coords('e1, 0-0-0')).to eq([[7, 4], ['0-0-0']])
+        expect(player.convert_to_coords('e1, 0-0')).to eq([[7, 4], ['0-0']])
+      end
+    end
+  end
+
   describe '#valid_move?' do
     let(:player_color) { 'red' }
     let(:player_pieces) { [
