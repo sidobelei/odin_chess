@@ -5,22 +5,22 @@ describe Player do
     context 'when a Player object is initialized' do
       let(:player_color) { 'white' }
       let(:player_pieces) { [
-        {'type': 'king', 'color': player_color},
-        {'type': 'queen', 'color': player_color},
-        {'type': 'bishop', 'color': player_color},
-        {'type': 'bishop', 'color': player_color},
-        {'type': 'knight', 'color': player_color},
-        {'type': 'knight', 'color': player_color},
-        {'type': 'rook', 'color': player_color},
-        {'type': 'rook', 'color': player_color},
-        {'type': 'pawn', 'color': player_color},
-        {'type': 'pawn', 'color': player_color},
-        {'type': 'pawn', 'color': player_color},
-        {'type': 'pawn', 'color': player_color},
-        {'type': 'pawn', 'color': player_color},
-        {'type': 'pawn', 'color': player_color},
-        {'type': 'pawn', 'color': player_color},
-        {'type': 'pawn', 'color': player_color}
+        double(type: 'king', color: player_color),
+        double(type: 'queen', color: player_color),
+        double(type: 'bishop', color: player_color),
+        double(type: 'bishop', color: player_color),
+        double(type: 'knight', color: player_color),
+        double(type: 'knight', color: player_color),
+        double(type: 'rook', color: player_color),
+        double(type: 'rook', color: player_color),
+        double(type: 'pawn', color: player_color),
+        double(type: 'pawn', color: player_color),
+        double(type: 'pawn', color: player_color),
+        double(type: 'pawn', color: player_color),
+        double(type: 'pawn', color: player_color),
+        double(type: 'pawn', color: player_color),
+        double(type: 'pawn', color: player_color),
+        double(type: 'pawn', color: player_color)
       ] }
       subject(:new_player) { described_class.new(player_color, player_pieces) }
       it 'assigns a player attribute' do
