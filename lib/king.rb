@@ -9,10 +9,10 @@ class King < ChessPiece
   end
 
   def update_position(new_position) 
-    if new_position == '[0-0-0]'
+    if new_position == ['0-0-0']
       @position = [position[0], 2]
       return [position[0], 3]
-    elsif new_position == '[0-0]'
+    elsif new_position == ['0-0']
       @position = [position[0], 6]
       return [position[0], 5]
     end
@@ -51,9 +51,9 @@ class King < ChessPiece
         while space < 5
           temp = [position[0], position[1] + (direction * space)]
           if space == 4 && direction == -1 && board.any? {|piece| piece.type == 'rook' && piece.color == color && piece.moved == 0 && piece.position == temp}
-            @possible_moves << '[0-0-0]'
+            @possible_moves << ['0-0-0']
           elsif space == 3 && direction == 1 && board.any? {|piece| piece.type == 'rook' && piece.color == color && piece.moved == 0 && piece.position == temp}
-            @possible_moves << '[0-0]'
+            @possible_moves << ['0-0']
           else
             break if board.any? {|piece| piece.position == temp} || in_check?(board, temp) == true          
           end
@@ -64,7 +64,7 @@ class King < ChessPiece
   end
 
   def remove_castling
-    @possible_moves.delete("[0-0]")
-    @possible_moves.delete("[0-0-0]")
+    @possible_moves.delete(['0-0'])
+    @possible_moves.delete(['0-0-0'])
   end
 end

@@ -74,10 +74,10 @@ describe King do
 
     context 'when a castling move is made' do
       it 'updates its position and returns the new Rook position' do
-        expect(unmoved_white_king.update_position('[0-0-0]')).to eq([unmoved_white_king.position[0], 3])
+        expect(unmoved_white_king.update_position(['0-0-0'])).to eq([unmoved_white_king.position[0], 3])
         expect(unmoved_white_king.position).to eq([unmoved_white_king.position[0], 2])
 
-        expect(unmoved_white_king.update_position('[0-0]')).to eq([unmoved_white_king.position[0], 5])
+        expect(unmoved_white_king.update_position(['0-0'])).to eq([unmoved_white_king.position[0], 5])
         expect(unmoved_white_king.position).to eq([unmoved_white_king.position[0], 6])
       end
     end
@@ -95,8 +95,8 @@ describe King do
           [6, 5],
           [0, 5],
           [0, 3],
-          '[0-0-0]',
-          '[0-0]'
+          ['0-0-0'],
+          ['0-0']
         ]
         king_white.remove_castling
         expect(king_white.possible_moves).to eq([
@@ -114,8 +114,8 @@ describe King do
           [1, 4],
           [1, 3],
           [0, 3],
-          '[0-0-0]',
-          '[0-0]'
+          ['0-0-0'],
+          ['0-0']
         ]
         king_red.remove_castling
         expect(king_red.possible_moves).to eq([
@@ -136,7 +136,7 @@ describe King do
           [6, 5],
           [0, 5],
           [0, 3],
-          '[0-0-0]'
+          ['0-0-0']
         ]
         king_white.remove_castling
         expect(king_white.possible_moves).to eq([
@@ -153,7 +153,7 @@ describe King do
           [1, 4],
           [1, 3],
           [0, 3],
-          '[0-0]'
+          ['0-0']
         ]
         king_red.remove_castling
         expect(king_red.possible_moves).to eq([
@@ -443,8 +443,8 @@ describe King do
             [6, 5],
             [7, 5],
             [7, 3],
-            '[0-0-0]',
-            '[0-0]'
+            ['0-0-0'],
+            ['0-0']
           ])
 
           king_red.possible_moves = [
@@ -461,8 +461,8 @@ describe King do
             [1, 4],
             [1, 3],
             [0, 3],
-            '[0-0-0]',
-            '[0-0]'
+            ['0-0-0'],
+            ['0-0']
           ])  
         end
       end
@@ -527,7 +527,7 @@ describe King do
             [6, 5],
             [7, 5],
             [7, 3],
-            '[0-0-0]'
+            ['0-0-0']
           ])
 
           king_red.possible_moves = [
@@ -544,7 +544,7 @@ describe King do
             [1, 4],
             [1, 3],
             [0, 3],
-            '[0-0]'
+            ['0-0']
           ])
         end
       end
@@ -1265,8 +1265,8 @@ describe King do
           [1, 4],
           [1, 3],
           [0, 3],
-          '[0-0-0]',
-          '[0-0]'
+          ['0-0-0'],
+          ['0-0']
         ])
       end
     end
