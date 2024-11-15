@@ -36,6 +36,12 @@ class Board
     return board
   end
 
+  def update_pieces
+    display.each do |piece|
+      piece.update_possible_moves(@display)
+    end
+  end
+
   def to_s
     board_string = "   +---+---+---+---+---+---+---+---+\n"
     row = 0
