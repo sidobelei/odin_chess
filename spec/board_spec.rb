@@ -136,6 +136,7 @@ describe Board do
     subject(:board_empty) { described_class.new }
     subject(:board_starting) { described_class.new }
     subject(:board_in_progress) { described_class.new }
+    subject(:board_captured) { described_class.new }
 
     let(:red_rook_1) { double(name: "\e[1m\e[31mR\e[0m", position: [0, 0]) }
     let(:red_knight) { double(name: "\e[1m\e[31mN\e[0m", position: [0, 1]) }
@@ -160,7 +161,15 @@ describe Board do
     let(:white_king) { double(name: "\e[1m\e[37mK\e[0m", position: [6, 6]) }
     let(:white_pawn_4) { double(name: "\e[1m\e[37mP\e[0m", position: [6, 7]) }
     let(:white_rook) { double(name: "\e[1m\e[37mR\e[0m", position: [7, 5]) }
-
+    let(:captured_red_rook_1) { double(name: "\e[1m\e[31mR\e[0m", position: [nil, nil]) }
+    let(:captured_red_pawn_1) { double(name: "\e[1m\e[31mP\e[0m", position: [nil, nil]) }
+    let(:captured_red_pawn_5) { double(name: "\e[1m\e[31mP\e[0m", position: [nil, nil]) }
+    let(:captured_red_pawn_7) { double(name: "\e[1m\e[31mP\e[0m", position: [nil, nil]) }
+    let(:captured_red_bishop) { double(name: "\e[1m\e[31mB\e[0m", position: [nil, nil]) }
+    let(:captured_white_pawn_2) { double(name: "\e[1m\e[37mP\e[0m", position: [nil, nil]) }
+    let(:captured_red_queen) { double(name: "\e[1m\e[31mQ\e[0m", position: [nil, nil]) }
+    let(:captured_white_rook) { double(name: "\e[1m\e[37mR\e[0m", position: [nil, nil]) }
+    
     context 'when the board is object is initialized' do
       it 'returns the string representation of the starting board' do
         expect(board_starting.to_s).to eq("   +---+---+---+---+---+---+---+---+\n8  | \e[1m\e[31mR\e[0m | \e[1m\e[31mN\e[0m | \e[1m\e[31mB\e[0m | \e[1m\e[31mQ\e[0m | \e[1m\e[31mK\e[0m | \e[1m\e[31mB\e[0m | \e[1m\e[31mN\e[0m | \e[1m\e[31mR\e[0m |\n   +---+---+---+---+---+---+---+---+\n7  | \e[1m\e[31mP\e[0m | \e[1m\e[31mP\e[0m | \e[1m\e[31mP\e[0m | \e[1m\e[31mP\e[0m | \e[1m\e[31mP\e[0m | \e[1m\e[31mP\e[0m | \e[1m\e[31mP\e[0m | \e[1m\e[31mP\e[0m |\n   +---+---+---+---+---+---+---+---+\n6  |   |   |   |   |   |   |   |   |\n   +---+---+---+---+---+---+---+---+\n5  |   |   |   |   |   |   |   |   |\n   +---+---+---+---+---+---+---+---+\n4  |   |   |   |   |   |   |   |   |\n   +---+---+---+---+---+---+---+---+\n3  |   |   |   |   |   |   |   |   |\n   +---+---+---+---+---+---+---+---+\n2  | \e[1m\e[37mP\e[0m | \e[1m\e[37mP\e[0m | \e[1m\e[37mP\e[0m | \e[1m\e[37mP\e[0m | \e[1m\e[37mP\e[0m | \e[1m\e[37mP\e[0m | \e[1m\e[37mP\e[0m | \e[1m\e[37mP\e[0m |\n   +---+---+---+---+---+---+---+---+\n1  | \e[1m\e[37mR\e[0m | \e[1m\e[37mN\e[0m | \e[1m\e[37mB\e[0m | \e[1m\e[37mQ\e[0m | \e[1m\e[37mK\e[0m | \e[1m\e[37mB\e[0m | \e[1m\e[37mN\e[0m | \e[1m\e[37mR\e[0m |\n   +---+---+---+---+---+---+---+---+\n     a   b   c   d   e   f   g   h\n\n")
@@ -202,6 +211,37 @@ describe Board do
           white_rook
         ]
         expect(board_in_progress.to_s).to eq("   +---+---+---+---+---+---+---+---+\n8  | \e[1m\e[31mR\e[0m | \e[1m\e[31mN\e[0m |   |   |   | \e[1m\e[31mR\e[0m | \e[1m\e[31mK\e[0m |   |\n   +---+---+---+---+---+---+---+---+\n7  |   |   | \e[1m\e[31mP\e[0m |   |   | \e[1m\e[31mP\e[0m | \e[1m\e[31mP\e[0m | \e[1m\e[31mP\e[0m |\n   +---+---+---+---+---+---+---+---+\n6  | \e[1m\e[31mP\e[0m |   |   |   | \e[1m\e[31mP\e[0m |   |   |   |\n   +---+---+---+---+---+---+---+---+\n5  |   | \e[1m\e[31mP\e[0m |   |   | \e[1m\e[37mN\e[0m |   | \e[1m\e[37mN\e[0m |   |\n   +---+---+---+---+---+---+---+---+\n4  |   | \e[1m\e[31mB\e[0m | \e[1m\e[37mP\e[0m |   |   |   |   |   |\n   +---+---+---+---+---+---+---+---+\n3  |   |   |   |   |   |   | \e[1m\e[37mP\e[0m |   |\n   +---+---+---+---+---+---+---+---+\n2  | \e[1m\e[31mQ\e[0m | \e[1m\e[37mB\e[0m |   |   | \e[1m\e[37mQ\e[0m | \e[1m\e[37mP\e[0m | \e[1m\e[37mK\e[0m | \e[1m\e[37mP\e[0m |\n   +---+---+---+---+---+---+---+---+\n1  |   |   |   |   |   | \e[1m\e[37mR\e[0m |   |   |\n   +---+---+---+---+---+---+---+---+\n     a   b   c   d   e   f   g   h\n\n")
+      end
+    end
+
+    context 'when there are chess pieces that have been captured' do
+      it 'returns a string that not contain the captured chess pieces' do
+        board_captured.display = [
+          captured_red_rook_1,
+          red_knight,
+          red_rook_2,
+          red_king,
+          captured_red_pawn_1,
+          red_pawn_2,
+          red_pawn_3,
+          red_pawn_4,
+          captured_red_pawn_5,
+          red_pawn_6,
+          captured_red_pawn_7,
+          white_knight_1,
+          white_knight_2,
+          captured_red_bishop,
+          white_pawn_1,
+          captured_white_pawn_2,
+          captured_red_queen,
+          white_bishop,
+          white_queen,
+          white_pawn_3,
+          white_king,
+          white_pawn_4,
+          captured_white_rook
+        ]
+        expect(board_captured.to_s).to eq("   +---+---+---+---+---+---+---+---+\n8  |   | \e[1m\e[31mN\e[0m |   |   |   | \e[1m\e[31mR\e[0m | \e[1m\e[31mK\e[0m |   |\n   +---+---+---+---+---+---+---+---+\n7  |   |   |   |   |   | \e[1m\e[31mP\e[0m | \e[1m\e[31mP\e[0m | \e[1m\e[31mP\e[0m |\n   +---+---+---+---+---+---+---+---+\n6  |   |   |   |   | \e[1m\e[31mP\e[0m |   |   |   |\n   +---+---+---+---+---+---+---+---+\n5  |   |   |   |   | \e[1m\e[37mN\e[0m |   | \e[1m\e[37mN\e[0m |   |\n   +---+---+---+---+---+---+---+---+\n4  |   |   | \e[1m\e[37mP\e[0m |   |   |   |   |   |\n   +---+---+---+---+---+---+---+---+\n3  |   |   |   |   |   |   |   |   |\n   +---+---+---+---+---+---+---+---+\n2  |   | \e[1m\e[37mB\e[0m |   |   | \e[1m\e[37mQ\e[0m | \e[1m\e[37mP\e[0m | \e[1m\e[37mK\e[0m | \e[1m\e[37mP\e[0m |\n   +---+---+---+---+---+---+---+---+\n1  |   |   |   |   |   |   |   |   |\n   +---+---+---+---+---+---+---+---+\n     a   b   c   d   e   f   g   h\n\n")
       end
     end
   end
