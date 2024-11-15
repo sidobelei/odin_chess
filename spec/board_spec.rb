@@ -54,6 +54,84 @@ describe Board do
     end
   end
 
+  describe '#update_pieces' do
+    subject(:board) { described_class.new }
+
+    context 'when a player makes a valid move' do
+      it 'updates all chess pieces on the board' do
+        expect(board.display).to match_array([
+          have_attributes(position: [0, 4], possible_moves: []),
+          have_attributes(position: [0, 3], possible_moves: []),
+          have_attributes(position: [0, 2], possible_moves: []),
+          have_attributes(position: [0, 5], possible_moves: []),
+          have_attributes(position: [0, 1], possible_moves: []),
+          have_attributes(position: [0, 6], possible_moves: []),
+          have_attributes(position: [0, 0], possible_moves: []),
+          have_attributes(position: [0, 7], possible_moves: []),
+          have_attributes(position: [1, 0], possible_moves: []),
+          have_attributes(position: [1, 1], possible_moves: []),
+          have_attributes(position: [1, 2], possible_moves: []),
+          have_attributes(position: [1, 3], possible_moves: []),
+          have_attributes(position: [1, 4], possible_moves: []),
+          have_attributes(position: [1, 5], possible_moves: []),
+          have_attributes(position: [1, 6], possible_moves: []),
+          have_attributes(position: [1, 7], possible_moves: []),
+          have_attributes(position: [7, 4], possible_moves: []),
+          have_attributes(position: [7, 3], possible_moves: []),
+          have_attributes(position: [7, 2], possible_moves: []),
+          have_attributes(position: [7, 5], possible_moves: []),
+          have_attributes(position: [7, 1], possible_moves: []),
+          have_attributes(position: [7, 6], possible_moves: []),
+          have_attributes(position: [7, 0], possible_moves: []),
+          have_attributes(position: [7, 7], possible_moves: []),
+          have_attributes(position: [6, 0], possible_moves: []),
+          have_attributes(position: [6, 1], possible_moves: []),
+          have_attributes(position: [6, 2], possible_moves: []),
+          have_attributes(position: [6, 3], possible_moves: []),
+          have_attributes(position: [6, 4], possible_moves: []),
+          have_attributes(position: [6, 5], possible_moves: []),
+          have_attributes(position: [6, 6], possible_moves: []),
+          have_attributes(position: [6, 7], possible_moves: [])
+        ])
+        board.update_pieces
+        expect(board.display).to match_array([
+          have_attributes(position: [0, 4], possible_moves: []),
+          have_attributes(position: [0, 3], possible_moves: []),
+          have_attributes(position: [0, 2], possible_moves: []),
+          have_attributes(position: [0, 5], possible_moves: []),
+          have_attributes(position: [0, 1], possible_moves: [[2, 2], [2, 0]]),
+          have_attributes(position: [0, 6], possible_moves: [[2, 7], [2, 5]]),
+          have_attributes(position: [0, 0], possible_moves: []),
+          have_attributes(position: [0, 7], possible_moves: []),
+          have_attributes(position: [1, 0], possible_moves: [[2, 0], [3, 0]]),
+          have_attributes(position: [1, 1], possible_moves: [[2, 1], [3, 1]]),
+          have_attributes(position: [1, 2], possible_moves: [[2, 2], [3, 2]]),
+          have_attributes(position: [1, 3], possible_moves: [[2, 3], [3, 3]]),
+          have_attributes(position: [1, 4], possible_moves: [[2, 4], [3, 4]]),
+          have_attributes(position: [1, 5], possible_moves: [[2, 5], [3, 5]]),
+          have_attributes(position: [1, 6], possible_moves: [[2, 6], [3, 6]]),
+          have_attributes(position: [1, 7], possible_moves: [[2, 7], [3, 7]]),
+          have_attributes(position: [7, 4], possible_moves: []),
+          have_attributes(position: [7, 3], possible_moves: []),
+          have_attributes(position: [7, 2], possible_moves: []),
+          have_attributes(position: [7, 5], possible_moves: []),
+          have_attributes(position: [7, 1], possible_moves: [[5, 0], [5, 2]]),
+          have_attributes(position: [7, 6], possible_moves: [[5, 5], [5, 7]]),
+          have_attributes(position: [7, 0], possible_moves: []),
+          have_attributes(position: [7, 7], possible_moves: []),
+          have_attributes(position: [6, 0], possible_moves: [[5, 0], [4, 0]]),
+          have_attributes(position: [6, 1], possible_moves: [[5, 1], [4, 1]]),
+          have_attributes(position: [6, 2], possible_moves: [[5, 2], [4, 2]]),
+          have_attributes(position: [6, 3], possible_moves: [[5, 3], [4, 3]]),
+          have_attributes(position: [6, 4], possible_moves: [[5, 4], [4, 4]]),
+          have_attributes(position: [6, 5], possible_moves: [[5, 5], [4, 5]]),
+          have_attributes(position: [6, 6], possible_moves: [[5, 6], [4, 6]]),
+          have_attributes(position: [6, 7], possible_moves: [[5, 7], [4, 7]])
+        ])
+      end
+    end
+  end
+
   describe 'to_s' do
     subject(:board_empty) { described_class.new }
     subject(:board_starting) { described_class.new }
