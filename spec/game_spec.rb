@@ -15,4 +15,21 @@ describe Game do
       end
     end
   end
+
+  describe 'convert_to_coords' do
+    subject(:game) { described_class.new }
+    
+    context 'when a regular move is made' do
+      it 'converts the string to the correct position and new location' do
+        expect(game.convert_to_coords('e1, d2')).to eq([[7, 4], [6, 3]])
+      end
+    end
+
+    context 'when a castling move is made' do
+      it 'converts the string to the correct position and new location' do
+        expect(game.convert_to_coords('e1, 0-0-0')).to eq([[7, 4], ['0-0-0']])
+        expect(game.convert_to_coords('e1, 0-0')).to eq([[7, 4], ['0-0']])
+      end
+    end
+  end
 end 
