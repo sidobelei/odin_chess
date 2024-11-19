@@ -10,6 +10,21 @@ class Game
     @player_2 = Player.new('red', @board.display.select { |piece| piece.color == 'red'})
   end
   
+  def get_input(player)
+    puts "#{player.color}'s Turn: "
+    input = gets.chomp
+    if /([a-h][1-8]), (([a-h][1-8])|(0-0-0)|(0-0))/.match(input)
+      pos, new_pos = convert_to_coords(input)
+      if player.valid_move?(pos, new_pos)
+        return pos, new_pos
+      else
+        puts "Invalid Input\n\n"
+      end
+    else
+      puts "Invalid Input\n\n"
+    end
+  end
+  
   def convert_to_coords(str)
     conversion_table = {
       'a' => 0, 
