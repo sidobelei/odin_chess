@@ -16,7 +16,7 @@ describe Game do
     end
   end
 
-  describe 'convert_to_coords' do
+  describe '#convert_to_coords' do
     subject(:game) { described_class.new }
     
     context 'when a regular move is made' do
