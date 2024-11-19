@@ -11,7 +11,7 @@ class Game
   end
   
   def get_input(player)
-    puts "#{player.color}'s Turn: "
+    puts "#{player.color.capitalize}'s Turn: "
     input = gets.chomp
     if /([a-h][1-8]), (([a-h][1-8])|(0-0-0)|(0-0))/.match(input)
       pos, new_pos = convert_to_coords(input)

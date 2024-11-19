@@ -61,7 +61,7 @@ describe Game do
       it 'returns Invalid Input message' do
         invalid_inputs.board.update_pieces
         player = invalid_inputs.player_1
-        expect{ invalid_inputs.get_input(player) }.to output("#{player.color}'s Turn: \nInvalid Input\n\n").to_stdout
+        expect{ invalid_inputs.get_input(player) }.to output("#{player.color.capitalize}'s Turn: \nInvalid Input\n\n").to_stdout
       end  
     end
 
@@ -71,8 +71,8 @@ describe Game do
         iivi_player = invalid_input_valid_input.player_2
         valid_input_invalid_input.board.update_pieces
         viii_player = valid_input_invalid_input.player_2
-        expect{ invalid_input_valid_input.get_input(iivi_player) }.to output("#{iivi_player.color}'s Turn: \nInvalid Input\n\n").to_stdout
-        expect{ valid_input_invalid_input.get_input(viii_player) }.to output("#{viii_player.color}'s Turn: \nInvalid Input\n\n").to_stdout
+        expect{ invalid_input_valid_input.get_input(iivi_player) }.to output("#{iivi_player.color.capitalize}'s Turn: \nInvalid Input\n\n").to_stdout
+        expect{ valid_input_invalid_input.get_input(viii_player) }.to output("#{viii_player.color.capitalize}'s Turn: \nInvalid Input\n\n").to_stdout
       end
     end
 
@@ -80,7 +80,7 @@ describe Game do
       it 'returns Invalid Input message' do
         invalid_position.board.update_pieces
         player = invalid_position.player_1
-        expect{ invalid_position.get_input(player) }.to output("#{player.color}'s Turn: \nInvalid Input\n\n").to_stdout
+        expect{ invalid_position.get_input(player) }.to output("#{player.color.capitalize}'s Turn: \nInvalid Input\n\n").to_stdout
       end
     end
 
@@ -88,7 +88,7 @@ describe Game do
       it 'returns Invalid Input message' do
         invalid_new_position.board.update_pieces
         player = invalid_new_position.player_2
-        expect{ invalid_new_position.get_input(player) }.to output("#{player.color}'s Turn: \nInvalid Input\n\n").to_stdout
+        expect{ invalid_new_position.get_input(player) }.to output("#{player.color.capitalize}'s Turn: \nInvalid Input\n\n").to_stdout
       end
     end
 
