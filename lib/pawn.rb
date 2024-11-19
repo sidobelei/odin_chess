@@ -19,7 +19,7 @@ attr_accessor :moved, :promoted, :opposite_row, :direction, :en_passant_moves
 
   def update_position(new_position)
     if new_position[0] == opposite_row
-      @position = nil
+      @position = [nil, nil]
       @promoted = true
     else
       @position = new_position
@@ -35,6 +35,10 @@ attr_accessor :moved, :promoted, :opposite_row, :direction, :en_passant_moves
       [direction, 1, 'attack'],
     ]
     movement.each_with_index do |move, index|
+      if position == [nil, nil]
+        break
+      end
+
       temp = [
         position[0] + move[0], 
         position[1] + move[1]
@@ -50,8 +54,8 @@ attr_accessor :moved, :promoted, :opposite_row, :direction, :en_passant_moves
       else
         next 
       end
-      @possible_moves = new_moves
     end
+    @possible_moves = new_moves
     add_en_passant(board)
   end
 

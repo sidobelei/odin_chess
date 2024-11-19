@@ -33,6 +33,10 @@ class King < ChessPiece
       [0, -1]
     ]
     movement.each do |move|
+      if position == [nil, nil]
+        break
+      end
+      
       temp = [position[0] + move[0], position[1] + move[1]]
       unless in_check?(board, temp) || opponent_piece?(board, temp) || king_or_same_color?(board, temp) || out_of_bounds?(temp)
         new_moves << temp

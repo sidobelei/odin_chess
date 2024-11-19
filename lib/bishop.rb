@@ -14,6 +14,10 @@ class Bishop < ChessPiece
       [1, 1]
     ] 
     movement.each do |move|
+      if position == [nil, nil]
+        break
+      end
+      
       temp = [
         position[0] + move[0], 
         position[1] + move[1]
