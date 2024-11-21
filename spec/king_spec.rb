@@ -1217,9 +1217,9 @@ describe King do
     context 'when there are opposing chess pieces around the King' do
       context 'when the King is boxed in but not in check' do
         it 'does not generate any moves' do
-          king_white.update_position([3, 4])
-          king_white.update_possible_moves(board_opposing_boxed)
-          expect(king_white.possible_moves).to eq([])
+          king_red.update_position([3, 4])
+          king_red.update_possible_moves(board_opposing_boxed)
+          expect(king_red.possible_moves).to eq([])
         end
       end
 
