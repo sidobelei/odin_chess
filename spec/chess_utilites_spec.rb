@@ -38,9 +38,13 @@ describe ChessUtilites do
     class KingDummy
       include ChessUtilites
       
+      attr_accessor :color, :position, :type, :possible_moves
+
       def initialize
         @color = 'red'
-        @position = [2, 6]  
+        @position = [2, 6]
+        @type = 'king'
+        @possible_moves = []  
       end
     end
     
