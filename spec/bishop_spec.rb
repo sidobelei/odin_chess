@@ -80,8 +80,8 @@ describe Bishop do
       pawn10,
       pawn11,
       king2
-    ]}
-    let(:board_boxed_in_opposite) {[
+    ] }
+    let(:board_boxed_in_opposite) { [
       bishop,
       king1,
       pawn12,
@@ -93,7 +93,7 @@ describe Bishop do
       pawn18,
       pawn19,
       king2
-    ]}
+    ] }
 
     context 'when there are no pieces in the path of the bishop' do
       before do
