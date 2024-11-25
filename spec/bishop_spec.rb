@@ -49,13 +49,14 @@ describe Bishop do
     let(:pawn19) { double("Pawn", color: 'red', name: 'P', type: 'pawn', position: [4, 4]) }
     let(:knight) { double("Knight", color: 'red', name: 'N', type: 'knight', position: [4, 2]) }
     let(:king2) { double("King", color: 'white', name: 'K', type: 'king', position: [5, 5]) }
+    let(:king_in_check) { double("King", color: 'red', name: 'K', type: 'king', position: [0, 6]) }
+    
     let(:board_clear) { [
       bishop,
       king1,
       rook1,
       rook2,
-      pawn1,
-      king2
+      pawn1
     ] }
     let(:board_obstructed) { [
       bishop,
@@ -94,14 +95,16 @@ describe Bishop do
       pawn19,
       king2
     ] }
+    let(:board_in_check) { [
+      bishop,
+      king_in_check
+    ] }
+    let(:board_my_king) { [
+      bishop,
+      king2
+    ] }
 
     context 'when there are no pieces in the path of the bishop' do
-      before do
-        allow(bishop).to receive(:out_of_bounds?).and_return(false, false, false, true, false, false, false, true, false, false, false, true, false, false, false, false, true)
-        allow(bishop).to receive(:king_or_same_color?).and_return(false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false)
-        allow(bishop).to receive(:opponent_piece?).and_return(false, false, false, false, false, false, false, false, false, false, false, false, false)
-      end
-
       it 'possible_moves has all moves' do
         bishop.update_possible_moves(board_clear)
         expect(bishop.possible_moves).to eq([
@@ -123,12 +126,6 @@ describe Bishop do
     end
 
     context 'when there are chess pieces in the path of the bishop' do
-      before do
-        allow(bishop).to receive(:out_of_bounds?).and_return(false, false, false, false, false, false, false)
-        allow(bishop).to receive(:king_or_same_color?).and_return(false, false, false, false, false, false, true)
-        allow(bishop).to receive(:opponent_piece?).and_return(false, true, false, true, true, false, false)
-      end
-
       it 'possible_moves has a limited set of moves' do
         bishop.update_possible_moves(board_obstructed)
         expect(bishop.possible_moves).to eq([
@@ -143,12 +140,6 @@ describe Bishop do
     end
 
     context 'when the bishop is surrounded by chess pieces of the same color' do
-      before do
-        allow(bishop).to receive(:out_of_bounds?).and_return(false, false, false, false)
-        allow(bishop).to receive(:king_or_same_color?).and_return(true, true, true)
-        allow(bishop).to receive(:opponent_piece?).and_return(false, false, false, false)
-      end
-
       it 'generates an empty set of moves for possible_moves' do
         bishop.update_possible_moves(board_boxed_in_same)
         expect(bishop.possible_moves).to eq([])
@@ -156,12 +147,6 @@ describe Bishop do
     end
 
     context 'when the bishop is surrounded by chess pieces of the opposite color' do
-      before do
-        allow(bishop).to receive(:out_of_bounds?).and_return(false, false, false, false)
-        allow(bishop).to receive(:king_or_same_color?).and_return(false, false, false, false)
-        allow(bishop).to receive(:opponent_piece?).and_return(true, true, true, true)
-      end
-
       it 'generates reduced set of moves for possible_moves' do
         bishop.update_possible_moves(board_boxed_in_opposite)
         expect(bishop.possible_moves).to eq([
@@ -169,17 +154,50 @@ describe Bishop do
           [2, 4],
           [4, 2],
           [4, 4]
+        ])        
+      end  
+    end
+
+    context 'when there is an opponent King in the path of the Bishop' do
+      it 'generates a set of moves that includes position of the opponent King' do
+        bishop.update_possible_moves(board_in_check)
+        expect(bishop.possible_moves).to eq([
+          [2, 2],
+          [1, 1],
+          [0, 0],
+          [2, 4],
+          [1, 5],
+          [0, 6],
+          [4, 2],
+          [5, 1],
+          [6, 0],
+          [4, 4],
+          [5, 5],
+          [6, 6],
+          [7, 7]
+        ])
+      end
+    end
+
+    context 'when your King is in the path of the Bishop' do
+      it 'generates a set of moves that excludes your King' do
+        bishop.update_possible_moves(board_my_king)
+        expect(bishop.possible_moves).to eq([
+          [2, 2],
+          [1, 1],
+          [0, 0],
+          [2, 4],
+          [1, 5],
+          [0, 6],
+          [4, 2],
+          [5, 1],
+          [6, 0],
+          [4, 4]
         ])
       end
     end
 
     context 'when the bishop is positioned at the top of the board' do
-      before do
-        allow(bishop).to receive(:out_of_bounds?).and_return(true, true, false, false, false, false, true, false, false, false, true)
-        allow(bishop).to receive(:king_or_same_color?).and_return(false, false, false, false, false, false, false)
-        allow(bishop).to receive(:opponent_piece?).and_return(false, false, false, false, false, false, false)
-      end
-
       it 'generates the correct set of valid moves' do
         bishop.update_position([0, 4])
         bishop.update_possible_moves(board_clear)
@@ -196,12 +214,6 @@ describe Bishop do
     end
 
     context 'when the bishop is positioned on the left edge of the board' do
-      before do
-        allow(bishop).to receive(:out_of_bounds?).and_return(true, false, false, false, false, true, true, false, false, false, true)
-        allow(bishop).to receive(:king_or_same_color?).and_return(false, false, false, false, false, false, false)
-        allow(bishop).to receive(:opponent_piece?).and_return(false, false, false, false, false, false, false)
-      end
-
       it 'generates the correct set of valid moves' do
         bishop.update_position([4, 0])
         bishop.update_possible_moves(board_clear)
@@ -218,12 +230,6 @@ describe Bishop do
     end
 
     context 'when the bishop is positioned on the right edge of the board' do
-      before do
-        allow(bishop).to receive(:out_of_bounds?).and_return(false, false, true, true, false, false, false, false, false, true, true)
-        allow(bishop).to receive(:king_or_same_color?).and_return(false, false, false, false, false, false, false)
-        allow(bishop).to receive(:opponent_piece?).and_return(false, false, false, false, false, false, false)
-      end
-
       it 'generates the correct set of valid moves' do
         bishop.update_position([2, 7])
         bishop.update_possible_moves(board_clear)
@@ -240,12 +246,6 @@ describe Bishop do
     end
 
     context 'when the bishop is positioned at the bottom of the board' do
-      before do
-        allow(bishop).to receive(:out_of_bounds?).and_return(false, false, true, false, false, false, false, false, true, true)
-        allow(bishop).to receive(:king_or_same_color?).and_return(false, false, false, false, false, false, false)
-        allow(bishop).to receive(:opponent_piece?).and_return(false, false, false, false, false, false, false)
-      end
-
       it 'generates the correct set of valid moves' do
         bishop.update_position([7, 2])
         bishop.update_possible_moves(board_clear)
@@ -262,12 +262,6 @@ describe Bishop do
     end
 
     context 'when the bishop is positioned at the left corner of the board' do
-      before do
-        allow(bishop).to receive(:out_of_bounds?).and_return(true, true, true, false, false, false, false, false, false, false, true)
-        allow(bishop).to receive(:king_or_same_color?).and_return(false, false, false, false, false, false, false)
-        allow(bishop).to receive(:opponent_piece?).and_return(false, false, false, false, false, false, false)
-      end
-
       it 'generates the correct set of valid moves' do
         bishop.update_position([0, 0])
         bishop.update_possible_moves(board_clear)
@@ -284,12 +278,6 @@ describe Bishop do
     end
 
     context 'when the bishop is positioned at the top right corner of the board' do
-      before do
-        allow(bishop).to receive(:out_of_bounds?).and_return(true, true, false, false, false, false, false, false, false, true, true)
-        allow(bishop).to receive(:king_or_same_color?).and_return(false, false, false, false, false, false, false)
-        allow(bishop).to receive(:opponent_piece?).and_return(false, false, false, false, false, false, false)
-      end
-
       it 'generates the correct set of valid moves' do
         bishop.update_position([0, 7])
         bishop.update_possible_moves(board_clear)
@@ -306,12 +294,6 @@ describe Bishop do
     end
 
     context 'when the bishop is positioned at the bottom left corner of the board' do
-      before do
-        allow(bishop).to receive(:out_of_bounds?).and_return(true, false, false, false, false, false, false, false, true, true, true)
-        allow(bishop).to receive(:king_or_same_color?).and_return(false, false, false, false, false, false, false, false)
-        allow(bishop).to receive(:opponent_piece?).and_return(false, false, false, false, false, false, false, false)
-      end
-
       it 'generates the correct set of valid moves' do
         bishop.update_position([7, 0])
         bishop.update_possible_moves(board_clear)
@@ -328,12 +310,6 @@ describe Bishop do
     end
 
     context 'when the bishop is positioned at the bottom right corner of the board' do
-      before do
-        allow(bishop).to receive(:out_of_bounds?).and_return(false, false, false, false, false, false, false, true, true, true, true)
-        allow(bishop).to receive(:king_or_same_color?).and_return(false, false, false, false, false, false, false)
-        allow(bishop).to receive(:opponent_piece?).and_return(false, false, false, false, false, false, false)
-      end
-
       it 'generates the correct set of valid moves' do
         bishop.update_position([7, 7])
         bishop.update_possible_moves(board_clear)
