@@ -62,7 +62,42 @@ describe ChessPiece do
     end
   end
 
-  describe '#king_or_same_color?' do
+  describe '#opponent_king?' do
+    subject(:king_red) { described_class.new('red', 'K', 'king', [0, 1]) }
+    subject(:king_white) { described_class.new('white', 'K', 'king', [7, 6]) }
+    subject(:queen_red) { described_class.new('red', 'Q', 'queen', [0, 6]) }
+    subject(:queen_white) { described_class.new('white', 'Q', 'queen', [7, 1]) }
+
+    let(:board) { [
+      king_red,
+      king_white,
+      queen_red,
+      queen_white
+    ] }
+
+    context 'when there is a opponent King where your chess piece wants to move to' do
+      it 'returns true' do
+        expect(queen_red.opponent_king?(board, [7, 6])).to eq(true)
+        expect(queen_white.opponent_king?(board, [0, 1])).to eq(true)
+      end
+    end
+
+    context 'when your King is where your chess piece wants to move to' do
+      it 'returns false' do
+        expect(queen_red.opponent_king?(board, [0, 1])).to eq(false)
+        expect(queen_white.opponent_king?(board, [7, 6])).to eq(false)
+      end
+    end
+
+    context 'when there are no kings ' do
+      it 'returns false' do
+        expect(queen_red.opponent_king?(board, [0, 5])).to eq(false)
+        expect(queen_white.opponent_king?(board, [7, 2])).to eq(false)
+      end
+    end
+  end
+  
+  describe '#my_piece?' do
     subject(:king1) { described_class.new('red', 'K', 'king', [0, 1]) }
     subject(:king2) { described_class.new('red', 'K', 'king', [7, 6]) }
     subject(:rook1) { described_class.new('red', 'R', 'rook', [0, 2]) }
@@ -91,31 +126,25 @@ describe ChessPiece do
       rook3,
       queen
     ] }
-    context 'when a King occupies the square on the board that you want to move to' do
-      it 'returns true' do
-        expect(bishop.king_or_same_color?(board, [0, 1])).to eq(true)
-        expect(bishop.king_or_same_color?(board, [7, 6])).to eq(true)
-      end
-    end
 
     context 'when the square on the board is occupied by your own chess piece' do
       it 'returns true' do
-        expect(rook1.king_or_same_color?(board, [0, 3])).to eq(true)
-        expect(rook1.king_or_same_color?(board, [4, 2])).to eq(true)
-        expect(king1.king_or_same_color?(board, [1, 0])).to eq(true)
+        expect(rook1.my_piece?(board, [0, 3])).to eq(true)
+        expect(rook1.my_piece?(board, [4, 2])).to eq(true)
+        expect(king1.my_piece?(board, [1, 0])).to eq(true)
       end
     end
 
     context 'when the square on the board is empty and you move your chess piece to it' do
       it 'returns false' do
-        expect(queen.king_or_same_color?(board, [2, 6])).to eq(false)
-        expect(queen.king_or_same_color?(board, [2, 7])).to eq(false)
-        expect(queen.king_or_same_color?(board, [3, 7])).to eq(false)
-        expect(queen.king_or_same_color?(board, [4, 7])).to eq(false)
-        expect(queen.king_or_same_color?(board, [4, 6])).to eq(false)
-        expect(queen.king_or_same_color?(board, [4, 5])).to eq(false)
-        expect(queen.king_or_same_color?(board, [3, 5])).to eq(false)
-        expect(queen.king_or_same_color?(board, [2, 5])).to eq(false)
+        expect(queen.my_piece?(board, [2, 6])).to eq(false)
+        expect(queen.my_piece?(board, [2, 7])).to eq(false)
+        expect(queen.my_piece?(board, [3, 7])).to eq(false)
+        expect(queen.my_piece?(board, [4, 7])).to eq(false)
+        expect(queen.my_piece?(board, [4, 6])).to eq(false)
+        expect(queen.my_piece?(board, [4, 5])).to eq(false)
+        expect(queen.my_piece?(board, [3, 5])).to eq(false)
+        expect(queen.my_piece?(board, [2, 5])).to eq(false)
       end
     end
   end
