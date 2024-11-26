@@ -26,7 +26,7 @@ class Knight < ChessPiece
         position[0] + move[0], 
         position[1] + move[1]
       ]
-      unless out_of_bounds?(temp) || king_or_same_color?(board, temp)
+      unless out_of_bounds?(temp) || my_piece?(board, temp)
         new_moves << temp
       end
     end
