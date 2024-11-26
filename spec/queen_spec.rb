@@ -50,6 +50,9 @@ describe Queen do
     let(:pawn9) { double('Pawn', color: 'white', name: 'P', type: 'pawn', position: [4, 3]) }
     let(:pawn10) { double('Pawn', color: 'white', name: 'P', type: 'pawn', position: [4, 4]) }
     let(:pawn11) { double('Pawn', color: 'white', name: 'P', type: 'pawn', position: [4, 5]) }
+    let(:king_in_check) { double('King', color: 'white', name: 'K', type: 'king', position: [1, 4]) }
+    let(:my_king) { double('King', color: 'red', name: 'K', type: 'king', position: [1, 4]) }
+
     let(:board_mixed) { [
       queen,
       king1,
@@ -100,17 +103,19 @@ describe Queen do
       knight2,
       king2
     ] }
-    let(:board_empty) {[
+    let(:board_empty) { [
       queen
-    ]}
+    ] }
+    let(:board_in_check) { [
+      queen,
+      king_in_check
+    ] }
+    let(:board_my_king) { [
+      queen,
+      my_king
+    ] }
     
     context 'when the board is empty' do
-      before do
-        allow(queen).to receive(:out_of_bounds?).and_return(false, false, false, true, false, false, false, true, false, false, false, true, false, false, false, true, false, false, false, true, false, false, false, false, true, false, false, false, false, true, false, false, false, false, true)
-        allow(queen).to receive(:king_or_same_color?).and_return(false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false)
-        allow(queen).to receive(:opponent_piece?).and_return(false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false)
-      end
-
       it 'possible_moves has all the moves' do
         queen.update_possible_moves(board_empty)
         expect(queen.possible_moves).to eq([
@@ -146,12 +151,6 @@ describe Queen do
     end
     
     context 'when there are different chess pieces surrounding the Queen' do
-      before do
-        allow(queen).to receive(:out_of_bounds?).and_return(false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false)
-        allow(queen).to receive(:king_or_same_color?).and_return(false, false, false, false, true, false, false, false, false, false, true, false, false, false, false, false, false, false, false, false, false, false, false)
-        allow(queen).to receive(:opponent_piece?).and_return(false, true, false, false, false, false, true, false, false, false, true, false, false, true, false, false, false, true, false, false, true)
-      end
-
       it 'possible_moves has a limited set of moves' do
         queen.update_possible_moves(board_mixed)
         expect(queen.possible_moves).to eq([
@@ -181,11 +180,6 @@ describe Queen do
     end
 
     context 'when there are chess pieces of the same color boxing in the Queen' do
-      before do
-        allow(queen).to receive(:out_of_bounds?).and_return(false, false, false, false, false, false, false, false)
-        allow(queen).to receive(:king_or_same_color?).and_return(true, true, true, true, true, true, true, true)
-      end
-
       it 'possible_moves is an empty array' do
         queen.update_possible_moves(board_boxed_in_same)
         expect(queen.possible_moves).to eq([])
@@ -193,12 +187,6 @@ describe Queen do
     end
     
     context 'when there are chess pieces of a different color boxing in the Queen' do
-      before do
-        allow(queen).to receive(:out_of_bounds?).and_return(false, false, false, false, false, false, false, false)
-        allow(queen).to receive(:king_or_same_color?).and_return(false, false, false, false, false, false, false, false)
-        allow(queen).to receive(:opponent_piece?).and_return(true, true, true, true, true, true, true, true)
-      end
-
       it 'possible_moves has a limited set of moves' do
         queen.update_possible_moves(board_boxed_in_opposite)
         expect(queen.possible_moves).to eq([
@@ -214,13 +202,74 @@ describe Queen do
       end
     end
 
-    context 'when the Queen is at the top of the board' do
-      before do
-        allow(queen).to receive(:out_of_bounds?).and_return(true, true, true, false, false, false, false, true, false, false, false, false, true, false, false, false, false, false, false, false, true, false, false, false, true, false, false, false, true)
-        allow(queen).to receive(:king_or_same_color?).and_return(false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false)
-        allow(queen).to receive(:opponent_piece?).and_return(false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false)
-      end
+    context 'when an opponent King is in the path of the Queen' do
+      it 'generates a set of moves that includes the position of the opponent King' do
+        queen.update_possible_moves(board_in_check)
+        expect(queen.possible_moves).to eq([
+          [2, 3],
+          [1, 2],
+          [0, 1],
+          [2, 4],
+          [1, 4],
+          [2, 5],
+          [1, 6],
+          [0, 7],
+          [3, 5],
+          [3, 6],
+          [3, 7],
+          [4, 5],
+          [5, 6],
+          [6, 7],
+          [4, 4],
+          [5, 4],
+          [6, 4],
+          [7, 4],
+          [4, 3],
+          [5, 2],
+          [6, 1],
+          [7, 0],
+          [3, 3],
+          [3, 2],
+          [3, 1],
+          [3, 0]
+        ])          
+      end  
+    end
 
+    context 'when your King is in the path of your Queen' do
+      it 'generates a set of moves that excludes ' do
+        queen.update_possible_moves(board_my_king)
+        expect(queen.possible_moves).to eq([
+          [2, 3],
+          [1, 2],
+          [0, 1],
+          [2, 4],
+          [2, 5],
+          [1, 6],
+          [0, 7],
+          [3, 5],
+          [3, 6],
+          [3, 7],
+          [4, 5],
+          [5, 6],
+          [6, 7],
+          [4, 4],
+          [5, 4],
+          [6, 4],
+          [7, 4],
+          [4, 3],
+          [5, 2],
+          [6, 1],
+          [7, 0],
+          [3, 3],
+          [3, 2],
+          [3, 1],
+          [3, 0]
+        ])
+      end
+    end
+
+    context 'when the Queen is at the top of the board' do
       it 'generates the correct set of valid moves' do
         queen.update_position([0, 3])
         queen.update_possible_moves(board_empty)
@@ -251,12 +300,6 @@ describe Queen do
     end
 
     context 'when the Queen is the bottom of the board' do
-      before do
-        allow(queen).to receive(:out_of_bounds?).and_return(false, false, false, false, true, false, false, false, false, false, false, false, true, false, false, false, true, false, false, false, true, true, true, true, false, false, false, false, true)
-        allow(queen).to receive(:king_or_same_color?).and_return(false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, true)
-        allow(queen).to receive(:opponent_piece?).and_return(false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false)
-      end
-      
       it 'generates the correct set of valid moves' do
         queen.update_position([7, 4])
         queen.update_possible_moves(board_empty)
@@ -287,12 +330,6 @@ describe Queen do
     end
 
     context 'when the Queen is at the left edge of the board' do
-      before do
-        allow(queen).to receive(:out_of_bounds?).and_return(true, false, false, false, true, false, false, false, true, false, false, false, false, false, false, false, true, false, false, false, false, true, false, false, false, false, true, true, true)
-        allow(queen).to receive(:king_or_same_color?).and_return(false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false)
-        allow(queen).to receive(:opponent_piece?).and_return(false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false)
-      end
-      
       it 'generates the correct set of valid moves' do
         queen.update_position([3, 0])
         queen.update_possible_moves(board_empty)
@@ -323,12 +360,6 @@ describe Queen do
     end
 
     context 'when the Queen is at the right edge of the board' do
-      before do
-        allow(queen).to receive(:out_of_bounds?).and_return(false, false, false, false, true, false, false, false, false, true, true, true, true, false, false, false, true, false, false, false, true)
-        allow(queen).to receive(:king_or_same_color?).and_return(false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false)
-        allow(queen).to receive(:opponent_piece?).and_return(false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false)
-      end
-      
       it 'generates the correct set of valid moves' do
         queen.update_position([4, 7])
         queen.update_possible_moves(board_empty)
@@ -346,18 +377,19 @@ describe Queen do
           [7, 7],
           [5, 6],
           [6, 5],
-          [7, 4]
+          [7, 4],
+          [4, 6],
+          [4, 5],
+          [4, 4],
+          [4, 3],
+          [4, 2],
+          [4, 1],
+          [4, 0]
         ])
       end
     end
 
     context 'when the Queen is at the top left corner of the board' do
-      before do
-        allow(queen).to receive(:out_of_bounds?).and_return(true, true, true, false, false, false, false, false, false, false, true, false, false, false, false, false, false, false, true,  false, false, false, false, false, false, false, true, true, true)
-        allow(queen).to receive(:king_or_same_color?).and_return(false, false, false, false, false, false, false,  false, false, false, false, false, false, false,  false, false, false, false, false, false, false)
-        allow(queen).to receive(:opponent_piece?).and_return(false, false, false, false, false, false, false,  false, false, false, false, false, false, false,  false, false, false, false, false, false, false)
-      end
-
       it 'generates the correct set of valid moves' do
         queen.update_position([0, 0])
         queen.update_possible_moves(board_empty)
@@ -388,12 +420,6 @@ describe Queen do
     end
 
     context 'when the Queen is at the top right corner of the board' do
-      before do
-        allow(queen).to receive(:out_of_bounds?).and_return(true, true, true, true, true, false, false, false, false, false, false, false, true, false, false, false, false, false, false, false, true, false, false, false, false, false, false, false, true)
-        allow(queen).to receive(:king_or_same_color?).and_return(false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false)
-        allow(queen).to receive(:opponent_piece?).and_return(false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false)
-      end
-      
       it 'generates the correct set of valid moves' do
         queen.update_position([0, 7])
         queen.update_possible_moves(board_empty)
@@ -424,12 +450,6 @@ describe Queen do
     end
 
     context 'when the Queen is at the bottom left corner of the board' do
-      before do
-        allow(queen).to receive(:out_of_bounds?).and_return(true, false, false, false, false, false, false, false, true, false, false, false, false, false, false, false, true, false, false, false, false, false, false, false, true, true, true, true, true)
-        allow(queen).to receive(:king_or_same_color?).and_return(false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false)
-        allow(queen).to receive(:opponent_piece?).and_return(false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false)
-      end
-      
       it 'generates the correct set of valid moves' do
         queen.update_position([7, 0])
         queen.update_possible_moves(board_empty)
@@ -460,12 +480,6 @@ describe Queen do
     end
 
     context 'when the Queen is at the bottom right corner of the board' do
-      before do
-        allow(queen).to receive(:out_of_bounds?).and_return(false, false, false, false, false, false, false, true, false, false, false, false, false, false, false, true, true, true, true, true, true, false, false, false, false, false, false, false, true)
-        allow(queen).to receive(:king_or_same_color?).and_return(false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false)
-        allow(queen).to receive(:opponent_piece?).and_return(false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false)
-      end
-      
       it 'generates the correct set of valid moves' do
         queen.update_position([7, 7])
         queen.update_possible_moves(board_empty)
