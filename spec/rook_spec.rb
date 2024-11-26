@@ -74,6 +74,7 @@ describe Rook do
     let(:pawn7) { double('Pawn', color: 'red', name: 'P', type: 'pawn', position: [4, 3]) }
     let(:pawn8) { double('Pawn', color: 'red', name: 'P', type: 'pawn', position: [4, 4]) }
     let(:pawn9) { double('Pawn', color: 'red', name: 'P', type: 'pawn', position: [4, 5]) }
+    let(:in_check_king) { double('King', color: 'white', name: 'K', type: 'king', position: [1, 4]) }
     let(:board_empty) {[
       rook
     ]}
@@ -105,13 +106,16 @@ describe Rook do
       pawn8,
       pawn9
     ] }
+    let(:board_in_check) { [
+      rook,
+      in_check_king
+    ] }
+    let(:board_my_king) { [
+      rook,
+      king1
+    ] }
 
     context 'when the board is empty' do
-      before do
-        allow(rook).to receive(:out_of_bounds?).and_return(false, false, false, true, false, false, false, true, false, false, false, false, true, false, false, false, false, true)
-        allow(rook).to receive(:king_or_same_color?).and_return(false, false, false, false, false, false, false, false, false, false, false, false, false, false)
-      end
-
       it 'possible_moves has all moves' do
         rook.update_possible_moves(board_empty)
         expect(rook.possible_moves).to eq([
@@ -134,12 +138,6 @@ describe Rook do
     end
 
     context 'when the board is surrounded by different chess pieces' do #fix wording
-      before do
-        allow(rook).to receive(:out_of_bounds?).and_return(false, false, false, false, false, false, false, false, false)
-        allow(rook).to receive(:king_or_same_color?).and_return(false, true, false, false, false, false, false, false, true)
-        allow(rook).to receive(:opponent_piece?).and_return(false, false, true, false, false, true, false)
-      end
-
       it 'possible_moves has a limited set of moves' do
         rook.update_possible_moves(board_mixed)
         expect(rook.possible_moves).to eq([
@@ -155,11 +153,6 @@ describe Rook do
     end
 
     context 'when there are chess pieces of the same color boxing in the Rook' do
-      before do
-        allow(rook).to receive(:out_of_bounds?).and_return(false, false, false, false)
-        allow(rook).to receive(:king_or_same_color?).and_return(true, true, true, true)
-      end
-
       it 'possible_moves is an empty array' do
         rook.update_position(board_boxed_in_same)
         expect(rook.possible_moves).to eq([])
@@ -167,12 +160,6 @@ describe Rook do
     end
 
     context 'when there are chess pieces of the different color boxing in the Rook' do
-      before do
-        allow(rook).to receive(:out_of_bounds?).and_return(false, false, false, false)
-        allow(rook).to receive(:king_or_same_color?).and_return(false, false, false, false)
-        allow(rook).to receive(:opponent_piece?).and_return(true, true, true, true)
-      end
-
       it 'possible_moves has a limited set of moves' do
         rook.update_possible_moves(board_boxed_in_opposite)
         expect(rook.possible_moves).to eq([
@@ -184,12 +171,48 @@ describe Rook do
       end
     end
 
-    context 'when the Rook is at the top of the board' do
-      before do
-        allow(rook).to receive(:out_of_bounds?).and_return(true, false, false, false, false, true, false, false, false, false, false, false, false, true, false, false, false, true)
-        allow(rook).to receive(:king_or_same_color?).and_return(false, false, false, false, false, false, false, false, false, false, false, false, false, false)
-      end
+    context 'when the opponent King is in the path of the Rook' do
+      it 'generates a set of moves the position of the opponent King' do
+        rook.update_possible_moves(board_in_check)
+        expect(rook.possible_moves).to eq([
+          [2, 4],
+          [1, 4],
+          [3, 5],
+          [3, 6],
+          [3, 7],
+          [4, 4],
+          [5, 4],
+          [6, 4],
+          [7, 4],
+          [3, 3],
+          [3, 2],
+          [3, 1],
+          [3, 0]
+        ])          
+      end  
+    end
 
+    context 'when your own King is in the path of the Rook' do
+      it 'generates a set of moves that excludes the position of your King' do
+        rook.update_possible_moves(board_my_king)
+        expect(rook.possible_moves).to eq([
+          [2, 4],
+          [3, 5],
+          [3, 6],
+          [3, 7],
+          [4, 4],
+          [5, 4],
+          [6, 4],
+          [7, 4],
+          [3, 3],
+          [3, 2],
+          [3, 1],
+          [3, 0]
+        ])
+      end
+    end
+
+    context 'when the Rook is at the top of the board' do
       it 'generates the correct set of valid moves' do
         rook.update_position([0, 3])
         rook.update_possible_moves(board_empty)
@@ -213,11 +236,6 @@ describe Rook do
     end
 
     context 'when the Rook is at the bottom of the board' do
-      before do
-        allow(rook).to receive(:out_of_bounds?).and_return(false, false, false, false, false, false, false, true, false, false, false, true, true, false, false, false, false, true)
-        allow(rook).to receive(:king_or_same_color?).and_return(false, false, false, false, false, false, false, false, false, false, false, false, false, false)
-      end
-
       it 'generates the correct set of valid moves' do
         rook.update_position([7, 4])
         rook.update_possible_moves(board_empty)
@@ -241,11 +259,6 @@ describe Rook do
     end
 
     context 'when the Rook is at the left edge of the board' do
-      before do
-        allow(rook).to receive(:out_of_bounds?).and_return(false, false, false, true, false, false, false, false, false, false, false, true, false, false, false, false, true, true)
-        allow(rook).to receive(:king_or_same_color?).and_return(false, false, false, false, false, false, false, false, false, false, false, false, false, false)
-      end
-
       it 'generates the correct set of valid moves' do
         rook.update_position([3, 0])
         rook.update_possible_moves(board_empty)
@@ -269,11 +282,6 @@ describe Rook do
     end
 
     context 'when the Rook is at the right edge of the board' do
-      before do
-        allow(rook).to receive(:out_of_bounds?).and_return(false, false, false, false, true, true, false, false, false, true, false, false, false, false, false, false, false, true)
-        allow(rook).to receive(:king_or_same_color?).and_return(false, false, false, false, false, false, false, false, false, false, false, false, false, false)
-      end
-
       it 'generates the correct set of valid moves' do
         rook.update_position([4, 7])
         rook.update_possible_moves(board_empty)
@@ -297,11 +305,6 @@ describe Rook do
     end
 
     context 'when the Rook is at the top left corner of the board' do
-      before do
-        allow(rook).to receive(:out_of_bounds?).and_return(true, false, false, false, false, false, false, false, true, false, false, false, false, false, false, false, true, true)
-        allow(rook).to receive(:king_or_same_color?).and_return(false, false, false, false, false, false, false, false, false, false, false, false, false, false)
-      end
-
       it 'generates the correct set of valid moves' do
         rook.update_position([0, 0])
         rook.update_possible_moves(board_empty)
@@ -325,11 +328,6 @@ describe Rook do
     end
 
     context 'when the Rook is at the top right corner of the board' do
-      before do
-        allow(rook).to receive(:out_of_bounds?).and_return(true, true, false, false, false, false, false, false, false, true, false, false, false, false, false, false, false, true)
-        allow(rook).to receive(:king_or_same_color?).and_return(false, false, false, false, false, false, false, false, false, false, false, false, false, false)
-      end
-
       it 'generates the correct set of valid moves' do
         rook.update_position([0, 7])
         rook.update_possible_moves(board_empty)
@@ -353,11 +351,6 @@ describe Rook do
     end
 
     context 'when the Rook is at the bottom left corner of the board' do
-      before do
-        allow(rook).to receive(:out_of_bounds?).and_return(false, false, false, false, false, false, false, true, false, false, false, false, false, false, false, true, true, true)
-        allow(rook).to receive(:king_or_same_color?).and_return(false, false, false, false, false, false, false, false, false, false, false, false, false, false)
-      end
-
       it 'generates the correct set of valid moves' do
         rook.update_position([7, 0])
         rook.update_possible_moves(board_empty)
@@ -381,11 +374,6 @@ describe Rook do
     end
 
     context 'when the Rook is at the bottom right corner of the board' do
-      before do
-        allow(rook).to receive(:out_of_bounds?).and_return(false, false, false, false, false, false, false, true, true, true, false, false, false, false, false, false, false, true)
-        allow(rook).to receive(:king_or_same_color?).and_return(false, false, false, false, false, false, false, false, false, false, false, false, false, false)
-      end
-
       it 'generates the correct set of valid moves' do
         rook.update_position([7, 7])
         rook.update_possible_moves(board_empty)
