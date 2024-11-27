@@ -88,37 +88,37 @@ describe Pawn do
         red_pawn6.update_position([7, 5])
         red_pawn7.update_position([7, 6])
         red_pawn8.update_position([7, 7])
-        expect(white_pawn1.position).to eq(nil)
+        expect(white_pawn1.position).to eq([nil, nil])
         expect(white_pawn1.promoted).to eq(true)
-        expect(white_pawn2.position).to eq(nil)
+        expect(white_pawn2.position).to eq([nil, nil])
         expect(white_pawn2.promoted).to eq(true)
-        expect(white_pawn3.position).to eq(nil)
+        expect(white_pawn3.position).to eq([nil, nil])
         expect(white_pawn3.promoted).to eq(true)
-        expect(white_pawn4.position).to eq(nil)
+        expect(white_pawn4.position).to eq([nil, nil])
         expect(white_pawn4.promoted).to eq(true)
-        expect(white_pawn5.position).to eq(nil)
+        expect(white_pawn5.position).to eq([nil, nil])
         expect(white_pawn5.promoted).to eq(true)
-        expect(white_pawn6.position).to eq(nil)
+        expect(white_pawn6.position).to eq([nil, nil])
         expect(white_pawn6.promoted).to eq(true)
-        expect(white_pawn7.position).to eq(nil)
+        expect(white_pawn7.position).to eq([nil, nil])
         expect(white_pawn7.promoted).to eq(true)
-        expect(white_pawn8.position).to eq(nil)
+        expect(white_pawn8.position).to eq([nil, nil])
         expect(white_pawn8.promoted).to eq(true)
-        expect(red_pawn1.position).to eq(nil)
+        expect(red_pawn1.position).to eq([nil, nil])
         expect(red_pawn1.promoted).to eq(true)
-        expect(red_pawn2.position).to eq(nil)
+        expect(red_pawn2.position).to eq([nil, nil])
         expect(red_pawn2.promoted).to eq(true)
-        expect(red_pawn3.position).to eq(nil)
+        expect(red_pawn3.position).to eq([nil, nil])
         expect(red_pawn3.promoted).to eq(true)
-        expect(red_pawn4.position).to eq(nil)
+        expect(red_pawn4.position).to eq([nil, nil])
         expect(red_pawn4.promoted).to eq(true)
-        expect(red_pawn5.position).to eq(nil)
+        expect(red_pawn5.position).to eq([nil, nil])
         expect(red_pawn5.promoted).to eq(true)
-        expect(red_pawn6.position).to eq(nil)
+        expect(red_pawn6.position).to eq([nil, nil])
         expect(red_pawn6.promoted).to eq(true)
-        expect(red_pawn7.position).to eq(nil)
+        expect(red_pawn7.position).to eq([nil, nil])
         expect(red_pawn7.promoted).to eq(true)
-        expect(red_pawn8.position).to eq(nil)
+        expect(red_pawn8.position).to eq([nil, nil])
         expect(red_pawn8.promoted).to eq(true)
       end
     end
@@ -155,6 +155,8 @@ describe Pawn do
     let(:knight4) { double('Knight', color: 'red', name: 'N', type: 'knight', position: [5, 1]) }
     let(:knight5) { double('Knight', color: 'white', name: 'N', type: 'knight', position: [5, 3]) }
     let(:knight6) { double('Knight', color: 'red', name: 'N', type: 'knight', position: [2, 7]) }
+    let(:king_in_check) { double('King', color: 'red', name: 'K', type: 'king', position: [4, 7]) }
+    let(:my_king) { double('King', color: 'white', name: 'K', type: 'king', position: [4, 7]) }
 
     let(:board_boxed_in_opposite) { [
       moved_pawn_white,
@@ -241,17 +243,18 @@ describe Pawn do
       knight5,
       knight6
     ] }
+
+    let(:board_in_check) { [
+      moved_pawn_white,
+      king_in_check
+    ] }
+
+    let(:board_my_king) { [
+      moved_pawn_white,
+      my_king
+    ] }
     
     context 'when the Pawn was moved and is surrounded by chess pieces that are of a different color' do
-      before do
-        allow(moved_pawn_white).to receive(:opponent_piece?).and_return(true, false, true, true)
-        allow(moved_pawn_white).to receive(:out_of_bounds?).and_return(false)
-        allow(moved_pawn_white).to receive(:king_or_same_color?).and_return(false)
-        allow(moved_pawn_red).to receive(:opponent_piece?).and_return(true, false, true, true)
-        allow(moved_pawn_red).to receive(:out_of_bounds?).and_return(false)
-        allow(moved_pawn_red).to receive(:king_or_same_color?).and_return(false)
-      end
-
       it 'possible_moves has a limited set of moves' do
         moved_pawn_white.update_position([4, 6])
         moved_pawn_white.update_possible_moves(board_boxed_in_opposite)
@@ -270,15 +273,6 @@ describe Pawn do
     end
 
     context 'when the Pawn was moved and is surrounded by chess pieces that are the same color' do
-      before do
-        allow(moved_pawn_white).to receive(:opponent_piece?).and_return(false, false, false, false, false, false)
-        allow(moved_pawn_white).to receive(:out_of_bounds?).and_return(false, false, false)
-        allow(moved_pawn_white).to receive(:king_or_same_color?).and_return(true, true, true)
-        allow(moved_pawn_red).to receive(:opponent_piece?).and_return(false, false, false, false, false, false)
-        allow(moved_pawn_red).to receive(:out_of_bounds?).and_return(false, false, false)
-        allow(moved_pawn_red).to receive(:king_or_same_color?).and_return(true, true, true)
-      end
-
       it 'generates an empty set of moves for possible_moves' do
         moved_pawn_white.update_position([3, 1])
         moved_pawn_white.update_possible_moves(board_boxed_in_same)
@@ -291,15 +285,6 @@ describe Pawn do
     end
 
     context 'when the Pawn was moved and there are no pieces around' do
-      before do
-        allow(moved_pawn_white).to receive(:opponent_piece?).and_return(false, false, false, false, false, false)
-        allow(moved_pawn_white).to receive(:out_of_bounds?).and_return(false, false, false)
-        allow(moved_pawn_white).to receive(:king_or_same_color?).and_return(false, false, false)
-        allow(moved_pawn_red).to receive(:opponent_piece?).and_return(false, false, false, false, false, false)
-        allow(moved_pawn_red).to receive(:out_of_bounds?).and_return(false, false, false)
-        allow(moved_pawn_red).to receive(:king_or_same_color?).and_return(false, false, false)
-      end
-
       it 'possible_moves only has one move' do
         moved_pawn_white.update_position([4, 6])
         moved_pawn_white.update_possible_moves(board_empty)
@@ -316,15 +301,6 @@ describe Pawn do
     end
 
     context 'when the Pawn was moved and there are chess pieces of a different color on the diagonals only' do
-      before do
-        allow(moved_pawn_white).to receive(:opponent_piece?).and_return(true, false, false, true)
-        allow(moved_pawn_white).to receive(:out_of_bounds?).and_return(false,)
-        allow(moved_pawn_white).to receive(:king_or_same_color?).and_return(false)
-        allow(moved_pawn_red).to receive(:opponent_piece?).and_return(true, false, false, true)
-        allow(moved_pawn_red).to receive(:out_of_bounds?).and_return(false)
-        allow(moved_pawn_red).to receive(:king_or_same_color?).and_return(false)
-      end
-
       it 'possible_moves has all moves' do
         moved_pawn_white.update_position([4, 6])
         moved_pawn_white.update_possible_moves(board_diagonals)
@@ -345,15 +321,6 @@ describe Pawn do
     end
 
     context 'when the Pawn was moved and there are chess pieces of the same color on the diagonals only' do
-      before do
-        allow(moved_pawn_white).to receive(:opponent_piece?).and_return(false, false, false, false)
-        allow(moved_pawn_white).to receive(:out_of_bounds?).and_return(false, false, false)
-        allow(moved_pawn_white).to receive(:king_or_same_color?).and_return(true, false, true)
-        allow(moved_pawn_red).to receive(:opponent_piece?).and_return(false, false, false, false)
-        allow(moved_pawn_red).to receive(:out_of_bounds?).and_return(false, false, false)
-        allow(moved_pawn_red).to receive(:king_or_same_color?).and_return(true, false, true)
-      end
-
       it 'possible_moves only has one move' do
         moved_pawn_white.update_position([5, 1])
         moved_pawn_white.update_possible_moves(board_diagonals)
@@ -366,17 +333,6 @@ describe Pawn do
     end
 
     context 'when the Pawn has not moved and there are no obstructions' do
-      before do
-        allow(unmoved_pawn_white).to receive(:opponent_piece?).and_return(false, false, false, false, false, false, false)
-        allow(unmoved_pawn_white).to receive(:out_of_bounds?).and_return(false, false, false)
-        allow(unmoved_pawn_white).to receive(:king_or_same_color?).and_return(false, false, false, false)
-        allow(unmoved_pawn_white).to receive(:add_en_passant)
-        allow(unmoved_pawn_red).to receive(:opponent_piece?).and_return(false, false, false, false, false, false, false)
-        allow(unmoved_pawn_red).to receive(:out_of_bounds?).and_return(false, false, false)
-        allow(unmoved_pawn_red).to receive(:king_or_same_color?).and_return(false, false, false, false)
-        allow(unmoved_pawn_red).to receive(:add_en_passant)
-      end
-
       it 'possible_moves has two forward moves' do
         unmoved_pawn_white.update_possible_moves(board_empty)
         expect(unmoved_pawn_white.possible_moves).to eq([
@@ -393,15 +349,6 @@ describe Pawn do
     end
 
     context 'when the Pawn has not moved and there is a chess piece in front of it' do
-      before do
-        allow(unmoved_pawn_white).to receive(:opponent_piece?).and_return(false, false, true, true, false)
-        allow(unmoved_pawn_white).to receive(:out_of_bounds?).and_return(false, false, false)
-        allow(unmoved_pawn_white).to receive(:king_or_same_color?).and_return(false, false, false)
-        allow(unmoved_pawn_red).to receive(:opponent_piece?).and_return(false, false, true, true, false)
-        allow(unmoved_pawn_red).to receive(:out_of_bounds?).and_return(false, false, false)
-        allow(unmoved_pawn_red).to receive(:king_or_same_color?).and_return(false, false, false)
-      end
-      
       it 'possible_moves is an empty array' do
         unmoved_pawn_white.update_possible_moves(board_block_forward_1)
         expect(unmoved_pawn_white.possible_moves).to eq([])
@@ -412,15 +359,6 @@ describe Pawn do
     end
 
     context 'when the Pawn has not moved and there is a chess piece two squares in front of it' do
-      before do
-        allow(unmoved_pawn_white).to receive(:opponent_piece?).and_return(false, false, false, false, false, false, false)
-        allow(unmoved_pawn_white).to receive(:out_of_bounds?).and_return(false, false, false)
-        allow(unmoved_pawn_white).to receive(:king_or_same_color?).and_return(false, false, true, false)
-        allow(unmoved_pawn_red).to receive(:opponent_piece?).and_return(false, false, false, false, false, false, false)
-        allow(unmoved_pawn_red).to receive(:out_of_bounds?).and_return(false, false, false)
-        allow(unmoved_pawn_red).to receive(:king_or_same_color?).and_return(false, false, true, false)
-      end
-
       it 'possible_moves only has one move forward' do
         unmoved_pawn_white.update_possible_moves(board_block_forward_2)
         expect(unmoved_pawn_white.possible_moves).to eq([[5, 1]])
@@ -429,18 +367,29 @@ describe Pawn do
         expect(unmoved_pawn_red.possible_moves).to eq([[2, 5]])
       end
     end
-  
+    
+    context 'when the opponent King is in the path of the Pawn' do
+      it 'generates a set of moves that includes the opponent King' do
+        moved_pawn_white.update_position([5, 6])
+        moved_pawn_white.update_possible_moves(board_in_check)
+        expect(moved_pawn_white.possible_moves).to eq([
+          [4, 6],
+          [4, 7]
+        ])
+      end
+    end
+
+    context 'when your King is in the path of your Pawn' do
+      it 'generates a set of moves that excludes your King' do
+        moved_pawn_white.update_position([5, 6])
+        moved_pawn_white.update_possible_moves(board_my_king)
+        expect(moved_pawn_white.possible_moves).to eq([
+          [4, 6]
+        ])
+      end
+    end
 
     context 'when the Pawn has moved and is positioned near the edge of the board' do
-      before do
-        allow(moved_pawn_white_edge).to receive(:opponent_piece?).and_return(false, false, false, false, false)
-        allow(moved_pawn_white_edge).to receive(:out_of_bounds?).and_return(true, false, false)
-        allow(moved_pawn_white_edge).to receive(:king_or_same_color?).and_return(false, false)
-        allow(moved_pawn_red_edge).to receive(:opponent_piece?).and_return(false, false, false, false, false)
-        allow(moved_pawn_red_edge).to receive(:out_of_bounds?).and_return(false, false, true)
-        allow(moved_pawn_red_edge).to receive(:king_or_same_color?).and_return(false, false)
-      end
-
       it 'possible_moves only has one forward move' do
         moved_pawn_white_edge.update_position([4, 7])
         moved_pawn_white_edge.update_possible_moves(board_edges)
@@ -453,16 +402,6 @@ describe Pawn do
     end
 
     context 'when there is a opportunity of an en_passant move while there are other chess pieces around' do
-      before do
-        allow(white_en_passant).to receive(:opponent_piece?).and_return(false, false, false, false, true, false, true)
-        allow(white_en_passant).to receive(:out_of_bounds?).and_return(false, false)
-        allow(white_en_passant).to receive(:king_or_same_color?).and_return(false, false, false)
-        
-        allow(red_en_passant).to receive(:opponent_piece?).and_return(false, false, false, false, true, false, true)
-        allow(red_en_passant).to receive(:out_of_bounds?).and_return(false, false)
-        allow(red_en_passant).to receive(:king_or_same_color?).and_return(false, false, false)
-      end
-      
       it 'generates the correct set of moves and extra en passant move' do
         white_en_passant.update_position([3, 6])#
         unmoved_pawn_red.update_position([3, 5])
@@ -666,15 +605,6 @@ describe Pawn do
     ] }
 
     context 'when there is no opportunity for an en passant move' do
-      before do
-        allow(pawn_white).to receive(:remove_en_passant)
-        allow(pawn_white).to receive(:opponent_piece?).and_return(false, false)
-        allow(pawn_white).to receive(:king_or_same_color?).and_return(false, false)
-        allow(pawn_red).to receive(:remove_en_passant)
-        allow(pawn_red).to receive(:opponent_piece?).and_return(false, false)
-        allow(pawn_red).to receive(:king_or_same_color?).and_return(false, false)
-      end
-
       it 'no extra move is added to possible_moves' do
         pawn_white.possible_moves = [[2, 1]]
         old_white_moves = pawn_white.possible_moves   
@@ -689,15 +619,6 @@ describe Pawn do
     end
 
     context 'when there is an en passant opportunity to the left of the pawn' do
-      before do
-        allow(pawn_white).to receive(:remove_en_passant)
-        allow(pawn_white).to receive(:opponent_piece?).and_return(false, false)
-        allow(pawn_white).to receive(:king_or_same_color?).and_return(false, false)
-        allow(pawn_red).to receive(:remove_en_passant)
-        allow(pawn_red).to receive(:opponent_piece?).and_return(false, false)
-        allow(pawn_red).to receive(:king_or_same_color?).and_return(false, false)  
-      end
-
       it 'adds an extra move to possible_moves' do 
         pawn_white.possible_moves = [[2, 1]]
         pawn_white.add_en_passant(board_left_en_passant)
@@ -716,15 +637,6 @@ describe Pawn do
     end
 
     context 'when there is an en passant opportunity to the right of the pawn' do
-      before do
-        allow(pawn_white).to receive(:remove_en_passant)
-        allow(pawn_white).to receive(:opponent_piece?).and_return(false, false)
-        allow(pawn_white).to receive(:king_or_same_color?).and_return(false, false)
-        allow(pawn_red).to receive(:remove_en_passant)
-        allow(pawn_red).to receive(:opponent_piece?).and_return(false, false)
-        allow(pawn_red).to receive(:king_or_same_color?).and_return(false, false)  
-      end
-
       it 'adds an extra move to possible_moves' do 
         pawn_white.possible_moves = [[2, 1]]
         pawn_white.add_en_passant(board_right_en_passant)
@@ -743,15 +655,6 @@ describe Pawn do
     end
 
     context 'when there is an en passant opportunity but there is a chess piece in the desired destination' do
-      before do
-        allow(pawn_white).to receive(:remove_en_passant)
-        allow(pawn_white).to receive(:opponent_piece?).and_return(false, true)
-        allow(pawn_white).to receive(:king_or_same_color?).and_return(true)
-        allow(pawn_red).to receive(:remove_en_passant)
-        allow(pawn_red).to receive(:opponent_piece?).and_return(false, true)
-        allow(pawn_red).to receive(:king_or_same_color?).and_return(true)
-      end
-
       it 'does not add extra en passant move to possible_moves' do
         pawn_white.possible_moves = [
           [2, 1],

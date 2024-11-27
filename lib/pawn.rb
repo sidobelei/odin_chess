@@ -45,10 +45,10 @@ attr_accessor :moved, :promoted, :opposite_row, :direction, :en_passant_moves
       ]
       if opponent_piece?(board, temp) && move[2] == 'attack'
         new_moves << temp
-      elsif out_of_bounds?(temp) == false && king_or_same_color?(board, temp) == false && opponent_piece?(board, temp) == false && move[2] == 'movement'
+      elsif out_of_bounds?(temp) == false && my_piece?(board, temp) == false && opponent_piece?(board, temp) == false && move[2] == 'movement'
         new_moves << temp
         temp = [temp[0] + direction, temp[1]]
-        if moved == 0 && opponent_piece?(board, temp) == false && king_or_same_color?(board, temp) == false
+        if moved == 0 && opponent_piece?(board, temp) == false && my_piece?(board, temp) == false
           new_moves << temp
         end
       else
@@ -64,10 +64,12 @@ attr_accessor :moved, :promoted, :opposite_row, :direction, :en_passant_moves
     on_left = [position[0], position[1] - 1]
     on_right = [position[0], position[1] + 1]
     board.each do |piece|
-      if piece.color != @color && piece.type == 'pawn' && piece.moved == 1
-        if piece.position == on_left && (opponent_piece?(board, on_left) == false && king_or_same_color?(board, on_left) == false)
+      if piece.color != @color && piece.type == 'pawn' && piece.moved == 1 && (piece.position[0] == 3 || piece.position[0] == 4)
+        left_en_passant = [position[0] + direction, position[1] - 1]
+        right_en_passant = [position[0] + direction, position[1] + 1]
+        if piece.position == on_left && opponent_piece?(board, left_en_passant) == false && my_piece?(board, left_en_passant) == false
           @possible_moves << [position[0] + direction, position[1] - 1]
-        elsif piece.position == on_right && (opponent_piece?(board, on_right) == false && king_or_same_color?(board, on_right) == false)
+        elsif piece.position == on_right && opponent_piece?(board, right_en_passant) == false && my_piece?(board, right_en_passant) == false
           @possible_moves << [position[0] + direction, position[1] + 1]
         else
           next
