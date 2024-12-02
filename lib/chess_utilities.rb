@@ -3,6 +3,18 @@ module ChessUtilites
     pos[0] > 7 || pos[0] < 0 || pos[1] > 7 || pos[1] < 0
   end
 
+  def opponent_king?(board, pos)
+    board.any? { |piece| piece.type == 'king' && piece.position == pos && piece. color != @color } 
+  end
+
+  def my_piece?(board, pos)
+    board.any? { |piece| piece.color == @color && piece.position == pos }
+  end 
+
+  def opponent_piece?(board, pos)
+    board.any? { |piece| piece.color != @color && piece.position == pos }
+  end
+
   def in_check?(board, pos)
     temp_board = []
     board.each do |piece|

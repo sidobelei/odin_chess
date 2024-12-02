@@ -36,16 +36,4 @@ class ChessPiece
   def update_possible_moves(board)
     puts 'Will update possible_moves in subclass'
   end
-
-  def opponent_king?(board, pos)
-    board.any? { |piece| piece.type == 'king' && piece.position == pos && piece. color != @color } 
-  end
-
-  def my_piece?(board, pos)
-    board.any? { |piece| piece.color == @color && piece.position == pos }
-  end 
-
-  def opponent_piece?(board, pos)
-    board.any? { |piece| piece.color != @color && piece.position == pos}
-  end
 end
