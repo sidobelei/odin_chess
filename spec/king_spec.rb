@@ -246,11 +246,13 @@ describe King do
       moved_rook_red_left,
       moved_rook_red_right
     ]}
-    let(:board_unmoved_king_one_rook_unblocked) {[
+    let(:board_unmoved_king_one_rook_unblocked_white) {[
       king_white,
-      king_red,
       unmoved_rook_white_left,
-      moved_rook_white_right,
+      moved_rook_white_right
+    ]}
+    let(:board_unmoved_king_one_rook_unblocked_red) {[
+      king_red,
       moved_rook_red_left,
       unmoved_rook_red_right
     ]}
@@ -520,7 +522,7 @@ describe King do
             [7, 5],
             [7, 3]
           ]
-          king_white.add_castling(board_unmoved_king_one_rook_unblocked) 
+          king_white.add_castling(board_unmoved_king_one_rook_unblocked_white) 
           expect(king_white.possible_moves).to eq([
             [6, 3],
             [6, 4],
@@ -537,7 +539,7 @@ describe King do
             [1, 3],
             [0, 3]
           ]
-          king_red.add_castling(board_unmoved_king_one_rook_unblocked)
+          king_red.add_castling(board_unmoved_king_one_rook_unblocked_red)
           expect(king_red.possible_moves).to eq([
             [0, 5],
             [1, 5],
@@ -1021,6 +1023,8 @@ describe King do
     let(:queen_white) { double('Queen', color: 'white', type: 'queen', position: [1, 4], possible_moves:[[2, 3], [2, 4], [2, 5]]) }
     let(:rook_white_3) { double('Rook', color: 'white', type: 'rook', position: [3, 6], possible_moves:[[3, 5]]) }
     let(:knight_white_3) { double('Knight', color: 'white', type: 'knight', position: [5, 2], possible_moves:[[3, 3]]) }
+    let(:knight_white_4) { double('Knight', color: 'white', type: 'knight', position: [6, 2], possible_moves:[[3, 3]]) }
+    let(:pawn_white_4) { double('Pawn', color: 'white', type: 'pawn', position: [5, 6], possible_moves: [[4, 6]]) }
     let(:bishop_white_3) { double('Bishop', color: 'white', type: 'bishop', position: [5, 3], possible_moves:[[4, 4]]) }
     let(:pawn_white_3) { double('Pawn', color: 'white', type: 'pawn', position: [5, 4], possible_moves:[[4, 3], [4, 5]]) }
 
@@ -1029,9 +1033,11 @@ describe King do
     let(:knight_red) { double('Knight', color: 'red', type: 'knight', position:[3, 5], possible_moves: []) }
     let(:bishop_red_1) { double('Bishop', color: 'red', type: 'bishop', position:[4, 3], possible_moves: []) }
     let(:bishop_red_2) { double('Bishop', color: 'red', type: 'bishop', position:[4, 5], possible_moves: []) }
+    let(:knight_white_5) { double('Knight', color: 'white', type: 'knight', position: [1, 6], possible_moves:[[3, 5]]) }
     let(:pawn_red_1) { double('Pawn', color: 'red', type: 'pawn', position:[5, 3], possible_moves: []) }
     let(:pawn_red_2) { double('Pawn', color: 'red', type: 'pawn', position:[5, 4], possible_moves: []) }
     let(:pawn_red_3) { double('Pawn', color: 'red', type: 'pawn', position:[5, 5], possible_moves: []) }
+
 
     let(:unmoved_rook_1) { double('Rook', color: 'red', type: 'rook', position: [0, 0], moved: 0, possible_moves: []) }
     let(:unmoved_rook_2) { double('Rook', color: 'red', type: 'rook', position: [0, 7], moved: 0, possible_moves: []) }
@@ -1062,10 +1068,10 @@ describe King do
       king_red,
       queen_white,
       rook_white_3,
-      knight_white_3,
+      knight_white_4,
       rook_white_1,
       knight_white_2,
-      rook_white_2
+      pawn_white_4
     ] }
     let(:board_same_boxed) { [
       king_red,
@@ -1081,10 +1087,10 @@ describe King do
     let(:board_mixed) { [
       king_red,
       queen_white,
-      rook_white_3,
       bishop_red_1,
       bishop_red_2,
-      bishop_white_3
+      bishop_white_3,
+      knight_white_5
     ] }
     let(:board_castling) { [
       king_red,

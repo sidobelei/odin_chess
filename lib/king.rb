@@ -38,7 +38,7 @@ class King < ChessPiece
       end
       
       temp = [position[0] + move[0], position[1] + move[1]]
-      unless in_check?(board, temp) || opponent_piece?(board, temp) || king_or_same_color?(board, temp) || out_of_bounds?(temp)
+      unless in_check?(board, temp) || out_of_bounds?(temp) || my_piece?(board, temp)
         new_moves << temp
       end
     end
