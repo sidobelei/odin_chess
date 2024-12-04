@@ -27,7 +27,10 @@ class Queen < ChessPiece
         position[1] + move[1]
       ]
       until out_of_bounds?(temp) || my_piece?(board, temp)
-        new_moves << temp
+        unless in_check?(board, temp)
+          new_moves << temp
+        end
+        
         break if opponent_piece?(board, temp)
         temp = [
           temp[0] + move[0],

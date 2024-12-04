@@ -51,7 +51,12 @@ describe Queen do
     let(:pawn10) { double('Pawn', color: 'white', name: 'P', type: 'pawn', position: [4, 4]) }
     let(:pawn11) { double('Pawn', color: 'white', name: 'P', type: 'pawn', position: [4, 5]) }
     let(:king_in_check) { double('King', color: 'white', name: 'K', type: 'king', position: [1, 4]) }
-    let(:my_king) { double('King', color: 'red', name: 'K', type: 'king', position: [1, 4]) }
+    let(:my_king_blocking) { double('King', color: 'red', name: 'K', type: 'king', position: [1, 4]) }
+    let(:my_king) { double('King', color: 'red', name: 'K', type: 'king', position: [2, 7]) }
+    let(:my_king_right) { double('King', color: 'red', name: 'K', type: 'king', position: [5, 4]) }
+    let(:my_king_in_check) { double('King', color: 'red', name: 'K', type: 'king', position: [5, 7]) }
+    let(:knight_no_move) { double('Knight', color: 'white', name: 'N', type: 'knight', position: [3, 6]) }
+    let(:bishop_no_move) { double('Bishop', color: 'white', name: 'B', type: 'bishop', position: [2, 4]) }
 
     let(:board_mixed) { [
       queen,
@@ -104,18 +109,40 @@ describe Queen do
       king2
     ] }
     let(:board_empty) { [
-      queen
-    ] }
-    let(:board_in_check) { [
       queen,
+      my_king
+    ] }
+    let(:board_checking) { [
+      queen,
+      my_king,
       king_in_check
     ] }
     let(:board_my_king) { [
       queen,
-      my_king
+      my_king_blocking
     ] }
+    let(:board_right) { [
+      queen,
+      my_king_right
+    ] }
+    let(:board_capture) { [
+      queen,
+      my_king_in_check,
+      knight_no_move,
+      ] }
+    let(:board_block) { [
+      queen,
+      my_king_in_check,
+      bishop_no_move
+      ] }
+    let(:board_no_move) { [
+      queen,
+      my_king_in_check,
+      knight_no_move,
+      bishop_no_move
+      ] }
     
-    context 'when the board is empty' do
+    context 'when the board is empty except for your King' do
       it 'possible_moves has all the moves' do
         queen.update_possible_moves(board_empty)
         expect(queen.possible_moves).to eq([
@@ -204,7 +231,7 @@ describe Queen do
 
     context 'when an opponent King is in the path of the Queen' do
       it 'generates a set of moves that includes the position of the opponent King' do
-        queen.update_possible_moves(board_in_check)
+        queen.update_possible_moves(board_checking)
         expect(queen.possible_moves).to eq([
           [2, 3],
           [1, 2],
@@ -362,7 +389,7 @@ describe Queen do
     context 'when the Queen is at the right edge of the board' do
       it 'generates the correct set of valid moves' do
         queen.update_position([4, 7])
-        queen.update_possible_moves(board_empty)
+        queen.update_possible_moves(board_right)
         expect(queen.possible_moves).to eq([
           [3, 6],
           [2, 5],
@@ -422,7 +449,7 @@ describe Queen do
     context 'when the Queen is at the top right corner of the board' do
       it 'generates the correct set of valid moves' do
         queen.update_position([0, 7])
-        queen.update_possible_moves(board_empty)
+        queen.update_possible_moves(board_right)
         expect(queen.possible_moves).to eq([
           [1, 7],
           [2, 7],
@@ -482,7 +509,7 @@ describe Queen do
     context 'when the Queen is at the bottom right corner of the board' do
       it 'generates the correct set of valid moves' do
         queen.update_position([7, 7])
-        queen.update_possible_moves(board_empty)
+        queen.update_possible_moves(board_right)
         expect(queen.possible_moves).to eq([
           [6, 6],
           [5, 5],
@@ -506,6 +533,30 @@ describe Queen do
           [7, 1],
           [7, 0]
         ])
+      end
+    end
+
+    context 'when the Queen cannot move because it would place its King in check' do
+      it 'generates no moves' do
+        queen.update_position([4, 6])
+        queen.update_possible_moves(board_no_move)
+        expect(queen.possible_moves).to eq([])
+      end
+    end
+
+    context "when the Queen's only move is to capture the opposing piece that is causing a check" do
+      it 'generates only the move to capture the opposing piece causing the check' do
+        queen.update_position([4, 6])
+        queen.update_possible_moves(board_capture)
+        expect(queen.possible_moves).to eq([[3, 6]])
+      end
+    end
+
+    context "when the Queen's only move is to block the opposing piece's check" do
+      it "generates only the move that will block the opposing pieces's check" do
+        queen.update_position([5, 6])
+        queen.update_possible_moves(board_block)
+        expect(queen.possible_moves).to eq([[4, 6]])
       end
     end
   end
