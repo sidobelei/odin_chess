@@ -75,8 +75,12 @@ describe Rook do
     let(:pawn8) { double('Pawn', color: 'red', name: 'P', type: 'pawn', position: [4, 4]) }
     let(:pawn9) { double('Pawn', color: 'red', name: 'P', type: 'pawn', position: [4, 5]) }
     let(:in_check_king) { double('King', color: 'white', name: 'K', type: 'king', position: [1, 4]) }
+    let(:my_king) { double('King', color: 'red', name: 'K', type: 'king', position: [0, 1]) } 
+    let(:bishop4) { double('Bishop', color: 'white', name: 'B', type: 'bishop', position: [4, 1]) }
+
     let(:board_empty) {[
-      rook
+      rook,
+      king1
     ]}
     let(:board_mixed) { [
       rook,
@@ -87,14 +91,15 @@ describe Rook do
       king2
     ] }
     let(:board_boxed_in_opposite) { [
-      rook2,
+      rook,
       knight2,
       queen1,
       bishop2,
       pawn2,
       pawn3,
       pawn4,
-      pawn5
+      pawn5,
+      my_king
     ] }
     let(:board_boxed_in_same) { [
       rook2,
@@ -108,27 +113,34 @@ describe Rook do
     ] }
     let(:board_in_check) { [
       rook,
-      in_check_king
+      in_check_king,
+      my_king
     ] }
     let(:board_my_king) { [
       rook,
       king1
     ] }
+    let(:board_cancel_check) { [
+      rook,
+      king1,
+      bishop4
+    ] }
 
     context 'when the board is empty' do
       it 'possible_moves has all moves' do
+        rook.update_position([3, 5])
         rook.update_possible_moves(board_empty)
         expect(rook.possible_moves).to eq([
-          [2, 4],
-          [1, 4],
-          [0, 4],
-          [3, 5],
+          [2, 5],
+          [1, 5],
+          [0, 5],
           [3, 6],
           [3, 7],
-          [4, 4],
-          [5, 4],
-          [6, 4],
-          [7, 4],
+          [4, 5],
+          [5, 5],
+          [6, 5],
+          [7, 5],
+          [3, 4],
           [3, 3],
           [3, 2],
           [3, 1],
@@ -237,19 +249,19 @@ describe Rook do
 
     context 'when the Rook is at the bottom of the board' do
       it 'generates the correct set of valid moves' do
-        rook.update_position([7, 4])
+        rook.update_position([7, 5])
         rook.update_possible_moves(board_empty)
         expect(rook.possible_moves).to eq([
-          [6, 4],
-          [5, 4],
-          [4, 4],
-          [3, 4],
-          [2, 4],
-          [1, 4],
-          [0, 4],
-          [7, 5],
+          [6, 5],
+          [5, 5],
+          [4, 5],
+          [3, 5],
+          [2, 5],
+          [1, 5],
+          [0, 5],
           [7, 6],
           [7, 7],
+          [7, 4],
           [7, 3],
           [7, 2],
           [7, 1],
@@ -393,6 +405,30 @@ describe Rook do
           [7, 1],
           [7, 0]
         ])     
+      end
+    end
+
+    context "when the Rook cannot move because it would place its King in check" do
+      it "generates no moves" do
+        rook.update_position([2, 3])
+        rook.update_possible_moves(board_cancel_check)
+        expect(rook.possible_moves).to eq([])
+      end
+    end
+
+    context "when the Rook's only move is to capture the opposing piece that is causing a check" do
+      it "generates only the move to capture the opposing piece causing the check" do
+        rook.update_position([7, 1])
+        rook.update_possible_moves(board_cancel_check)
+        expect(rook.possible_moves).to eq([[4, 1]])
+      end
+    end
+
+    context "when the Rook's only move is to block the opposing piece's check" do
+      it "generates only the move that will block the opposing piece's check" do
+        rook.update_position([3, 7])
+        rook.update_possible_moves(board_cancel_check)
+        expect(rook.possible_moves).to eq([[3, 2]])
       end
     end
   end
