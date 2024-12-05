@@ -57,7 +57,8 @@ describe Knight do
     let(:knight3) { double('Knight', color: 'white', name: 'N', type: 'knight', position: [6, 4]) }
     let(:knight4) { double('Knight', color: 'red', name: 'N', type: 'knight', position: [4, 2]) }
     let(:king_in_check) { double('King', color: 'white', name: 'K', type: 'king', position: [5, 2]) }
-    let(:my_king) { double('King', color: 'red', name: 'K', type: 'king', position: [5, 2]) }
+    let(:my_king) { double('King', color: 'red', name: 'K', type: 'king', position: [5, 0]) }
+    let(:rook5) { double('Rook', color: 'white', name: 'R', type: 'rook', position: [5, 4]) }
 
     let(:board_empty) { [
       knight,
@@ -179,11 +180,17 @@ describe Knight do
     ] }
     let(:board_in_check) { [
       knight,
-      king_in_check
+      king_in_check,
+      my_king
     ] }
     let(:board_my_king) { [
       knight,
       my_king
+    ] }
+    let(:board_cancel_check) { [
+      knight,
+      my_king,
+      rook5
     ] }
 
     context 'when there are no game pieces in the path of the knight piece and no game pieces at its final position' do
@@ -291,17 +298,18 @@ describe Knight do
       end
     end
 
-    context 'when your King is in the path of your King' do
+    context 'when your Knight is in the path of your King' do
       it 'generates a set of moves that excludes the position of your King' do
+        knight.update_position([4, 2])
         knight.update_possible_moves(board_my_king)
         expect(knight.possible_moves).to eq([
+          [2, 1],
           [2, 3],
-          [2, 5],
-          [3, 6],
-          [5, 6],
-          [6, 5],
+          [3, 4],
+          [5, 4],
           [6, 3],
-          [3, 2]
+          [6, 1],
+          [3, 0]
         ])
       end
     end
@@ -399,6 +407,30 @@ describe Knight do
           [5, 6],
           [6, 5]
         ])
+      end
+    end
+
+    context "when the Knight cannot move because it would place its King in check" do
+      it "generates no moves" do
+        knight.update_position([5, 2])
+        knight.update_possible_moves(board_cancel_check)
+        expect(knight.possible_moves).to eq([])
+      end
+    end
+
+    context "when the Knight's only move is to capture the opposing piece that is causing a check" do
+      it "generates only the move to capture the opposing piece causing the check" do
+        knight.update_position([3, 5])
+        knight.update_possible_moves(board_cancel_check)
+        expect(knight.possible_moves).to eq([[5, 4]])
+      end
+    end
+
+    context "when the Knight's only move is to block the opposing piece's check" do
+      it "generates only the move that will block the opposing piece's check" do
+        knight.update_position([3, 1])
+        knight.update_possible_moves(board_cancel_check)
+        expect(knight.possible_moves).to eq([[5, 2]])
       end
     end
   end

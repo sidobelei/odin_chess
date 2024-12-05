@@ -50,13 +50,16 @@ describe Bishop do
     let(:knight) { double("Knight", color: 'red', name: 'N', type: 'knight', position: [4, 2]) }
     let(:king2) { double("King", color: 'white', name: 'K', type: 'king', position: [5, 5]) }
     let(:king_in_check) { double("King", color: 'red', name: 'K', type: 'king', position: [0, 6]) }
-    
+    let(:my_king) { double("King", color: 'white', name: 'K', type: 'king', position: [7, 4]) }
+    let(:rook3) { double("Rook", color: 'red', name: 'R', type: 'rook', position: [2, 4]) }
+
     let(:board_clear) { [
       bishop,
       king1,
       rook1,
       rook2,
-      pawn1
+      pawn1,
+      my_king
     ] }
     let(:board_obstructed) { [
       bishop,
@@ -93,19 +96,25 @@ describe Bishop do
       pawn17,
       pawn18,
       pawn19,
-      king2
+      my_king
     ] }
     let(:board_in_check) { [
       bishop,
-      king_in_check
+      king_in_check,
+      my_king
     ] }
     let(:board_my_king) { [
       bishop,
       king2
     ] }
+    let(:board_cancel_check) { [
+      bishop,
+      my_king,
+      rook3
+    ] }
 
     context 'when there are no pieces in the path of the bishop' do
-      it 'possible_moves has all moves' do
+      it 'possible_moves has all moves' do #
         bishop.update_possible_moves(board_clear)
         expect(bishop.possible_moves).to eq([
           [2, 2],
@@ -322,6 +331,30 @@ describe Bishop do
           [1, 1],
           [0, 0]
         ])
+      end
+    end
+
+    context 'when the Bishop cannot move because it would place its King in check' do
+      it 'generates no moves' do
+        bishop.update_position([5, 4])
+        bishop.update_possible_moves(board_cancel_check)
+        expect(bishop.possible_moves).to eq([])
+      end
+    end
+
+    context "when the Bishop's only is move is to capture the opposing piece that is causing a check" do
+      it 'generates only the move to capture the opposing piece causing the check' do
+        bishop.update_position([5, 2])
+        bishop.update_possible_moves(board_cancel_check)
+        expect(bishop.possible_moves).to eq([[3, 4]])
+      end
+    end
+
+    context "when the Bishop's only move is to block the opposing piece's check" do
+      it "generates only the move that will block the opposing piece's check" do
+        bishop.update_position([6, 2])
+        bishop.update_possible_moves(board_cancel_check)
+        expect(bishop.possible_moves).to eq([[4, 4]])
       end
     end
   end

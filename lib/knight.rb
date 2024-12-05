@@ -26,7 +26,8 @@ class Knight < ChessPiece
         position[0] + move[0], 
         position[1] + move[1]
       ]
-      unless out_of_bounds?(temp) || my_piece?(board, temp)
+
+      unless out_of_bounds?(temp) || my_piece?(board, temp) || in_check?(board, temp)  
         new_moves << temp
       end
     end
