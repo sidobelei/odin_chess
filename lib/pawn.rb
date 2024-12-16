@@ -43,12 +43,12 @@ attr_accessor :moved, :promoted, :opposite_row, :direction, :en_passant_moves
         position[0] + move[0], 
         position[1] + move[1]
       ]
-      if opponent_piece?(board, temp) && move[2] == 'attack'
+      if opponent_piece?(board, temp) && move[2] == 'attack' && in_check?(board, temp) == false
         new_moves << temp
-      elsif out_of_bounds?(temp) == false && my_piece?(board, temp) == false && opponent_piece?(board, temp) == false && move[2] == 'movement'
+      elsif out_of_bounds?(temp) == false && my_piece?(board, temp) == false && opponent_piece?(board, temp) == false && move[2] == 'movement' && in_check?(board, temp) == false
         new_moves << temp
         temp = [temp[0] + direction, temp[1]]
-        if moved == 0 && opponent_piece?(board, temp) == false && my_piece?(board, temp) == false
+        if moved == 0 && opponent_piece?(board, temp) == false && my_piece?(board, temp) == false && in_check?(board, temp) == false
           new_moves << temp
         end
       else
@@ -67,10 +67,10 @@ attr_accessor :moved, :promoted, :opposite_row, :direction, :en_passant_moves
       if piece.color != @color && piece.type == 'pawn' && piece.moved == 1 && (piece.position[0] == 3 || piece.position[0] == 4)
         left_en_passant = [position[0] + direction, position[1] - 1]
         right_en_passant = [position[0] + direction, position[1] + 1]
-        if piece.position == on_left && opponent_piece?(board, left_en_passant) == false && my_piece?(board, left_en_passant) == false
-          @possible_moves << [position[0] + direction, position[1] - 1]
-        elsif piece.position == on_right && opponent_piece?(board, right_en_passant) == false && my_piece?(board, right_en_passant) == false
-          @possible_moves << [position[0] + direction, position[1] + 1]
+        if piece.position == on_left && opponent_piece?(board, left_en_passant) == false && my_piece?(board, left_en_passant) == false && in_check?(board, left_en_passant) == false
+          @possible_moves << left_en_passant
+        elsif piece.position == on_right && opponent_piece?(board, right_en_passant) == false && my_piece?(board, right_en_passant) == false && in_check?(board, right_en_passant) == false
+          @possible_moves << right_en_passant
         else
           next
         end

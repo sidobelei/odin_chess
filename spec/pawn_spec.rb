@@ -157,9 +157,14 @@ describe Pawn do
     let(:knight6) { double('Knight', color: 'red', name: 'N', type: 'knight', position: [2, 7]) }
     let(:king_in_check) { double('King', color: 'red', name: 'K', type: 'king', position: [4, 7]) }
     let(:my_king) { double('King', color: 'white', name: 'K', type: 'king', position: [4, 7]) }
+    let(:white_king) { double('King', color: 'white', name: 'K', type: 'king', position: [7, 0]) }
+    let(:red_king) { double('King', color: 'red', name: 'K', type: 'king', position: [0, 7]) }
+    let(:checking_rook) { double('Rook', color: 'white', name: 'R', type: 'rook', position: [7, 7]) }
+    let(:checking_bishop) { double('Bishop', color: 'white', name: 'B', type: 'bishop', position: [7, 4]) }
 
     let(:board_boxed_in_opposite) { [
       moved_pawn_white,
+      white_king,
       knight1,
       pawn1,
       pawn2,
@@ -169,6 +174,7 @@ describe Pawn do
       rook2,
       queen1,
       moved_pawn_red,
+      red_king,
       knight2,
       pawn3,
       pawn4,
@@ -181,6 +187,7 @@ describe Pawn do
 
     let(:board_boxed_in_same) { [
       moved_pawn_white,
+      white_king,
       knight1,
       pawn1,
       pawn2,
@@ -190,6 +197,7 @@ describe Pawn do
       rook2,
       queen1,
       moved_pawn_red,
+      red_king,
       knight2,
       pawn3,
       pawn4,
@@ -202,24 +210,30 @@ describe Pawn do
 
     let(:board_empty) { [
       moved_pawn_white,
+      white_king,
       moved_pawn_red,
+      red_king,
       unmoved_pawn_white,
       unmoved_pawn_red
     ] }
 
     let(:board_diagonals) { [
       moved_pawn_white,
+      white_king,
       knight1,
       pawn2,
       moved_pawn_red,
+      red_king,
       knight2,
       pawn4
     ] }
 
     let(:board_block_forward_1) { [
       unmoved_pawn_white,
+      white_king,
       knight3,
       unmoved_pawn_red,
+      red_king,
       knight4
     ] }
     
@@ -232,12 +246,16 @@ describe Pawn do
 
     let(:board_edges) { [
       moved_pawn_white_edge,
-      moved_pawn_red_edge
+      white_king,
+      moved_pawn_red_edge,
+      red_king
     ] }
 
     let(:board_en_passant) { [
       white_en_passant,
+      white_king,
       red_en_passant,
+      red_king,
       unmoved_pawn_white,
       unmoved_pawn_red,
       knight5,
@@ -246,12 +264,25 @@ describe Pawn do
 
     let(:board_in_check) { [
       moved_pawn_white,
+      white_king,
       king_in_check
     ] }
 
     let(:board_my_king) { [
       moved_pawn_white,
       my_king
+    ] }
+
+    let(:board_capture) { [
+      moved_pawn_red,
+      king_in_check,
+      checking_rook
+    ] }
+
+    let(:board_block_and_no_move) { [
+      moved_pawn_red,
+      king_in_check,
+      checking_bishop
     ] }
     
     context 'when the Pawn was moved and is surrounded by chess pieces that are of a different color' do
@@ -422,6 +453,30 @@ describe Pawn do
         ])
       end
     end
+
+    context "when the Pawn's only move is to capture the opposing piece that is causing a check" do
+      it 'generates only the move to capture the opposing piece causing the check' do
+        moved_pawn_red.update_position([6, 6])
+        moved_pawn_red.update_possible_moves(board_capture)
+        expect(moved_pawn_red.possible_moves).to eq([[7, 7]])
+      end
+    end
+
+    context "when the Pawn's only move is to block the opposing piece's check" do
+      it "generates only the move that will block the opposing pieces's check" do
+        moved_pawn_red.update_position([4, 6])
+        moved_pawn_red.update_possible_moves(board_block_and_no_move)
+        expect(moved_pawn_red.possible_moves).to eq([[5, 6]])
+      end
+    end
+
+    context 'when the Pawn cannot move because it would place its King in check' do
+      it 'generates no moves' do
+        moved_pawn_red.update_position([5, 6])
+        moved_pawn_red.update_possible_moves(board_block_and_no_move)
+        expect(moved_pawn_red.possible_moves).to eq([])
+      end
+    end
   end
 
   describe '#remove_en_passant' do
@@ -431,10 +486,14 @@ describe Pawn do
     subject(:opposing_pawn_red_1) { described_class.new('red', [1, 1]) }
     subject(:opposing_pawn_white_2) { described_class.new('white', [6, 4]) }
     subject(:opposing_pawn_red_2) { described_class.new('red', [1, 3]) }
+    let(:white_king) { double('King', color: 'white', name: 'K', type: 'king', position: [7, 0]) }
+    let(:red_king) { double('King', color: 'red', name: 'K', type: 'king', position: [0, 7]) } 
     
     let(:board) { [
       pawn_white,
+      white_king,
       pawn_red,
+      red_king,
       opposing_pawn_white_1,
       opposing_pawn_white_2,
       opposing_pawn_red_1,
@@ -556,6 +615,8 @@ describe Pawn do
     let(:knight_right_2) { double('Knight', color: 'red', name: 'N', type: 'knight', position: [2, 2]) }
     let(:knight_left_3) { double('Knight', color: 'red', name: 'N', type: 'knight', position: [5, 7]) }
     let(:knight_right_4) { double('Knight', color: 'white', name: 'N', type: 'knight', position: [5, 5]) }
+    let(:white_king) { double('King', color: 'white', name: 'K', type: 'king', position: [7, 0]) }
+    let(:red_king) { double('King', color: 'red', name: 'K', type: 'king', position: [0, 7]) }
 
     before do
       pawn_white.update_position([4, 1])
@@ -572,7 +633,9 @@ describe Pawn do
 
     let(:board_no_en_passant) { [
       pawn_white,
+      white_king,
       pawn_red,
+      red_king,
       bishop_white_left,
       rook_white_right,
       rook_red_left,
@@ -581,21 +644,27 @@ describe Pawn do
 
     let(:board_left_en_passant) { [
       pawn_white,
+      white_king,
       pawn_red,
+      red_king,
       opposing_pawn_white_left,
       opposing_pawn_red_left
     ] }
     
     let(:board_right_en_passant) { [
       pawn_white,
+      white_king,
       pawn_red,
+      red_king,
       opposing_pawn_white_right,
       opposing_pawn_red_right
     ] }
 
     let(:board_blocked_en_passant) { [
       pawn_white,
+      white_king,
       pawn_red,
+      red_king,
       opposing_pawn_white_left,
       opposing_pawn_red_left,
       knight_left_1,
