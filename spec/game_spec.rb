@@ -13,6 +13,10 @@ describe Game do
         expect(game.player_1).to be_a(Player)
         expect(game.player_2).to be_a(Player)
       end
+
+      it 'creates a checkmate attribute and assigns it to false' do
+        expect(game.checkmate).to eq(false)
+      end
     end
   end
 
@@ -120,6 +124,62 @@ describe Game do
         castling_player_queenside = valid_castling_queenside.player_1
         expect(valid_castling_queenside.get_input(castling_player_queenside)).to eq([[7, 4], ['0-0-0']])
       end      
+    end
+  end
+
+  describe '#checkmate?' do
+    subject(:starting_game) { described_class.new }
+    subject(:in_progress) { described_class.new }
+    subject(:in_check) { described_class.new }
+    subject(:in_checkmate) { described_class.new }
+    let(:red_king) { double("King", position: [0, 7], possible_moves: [[0, 6], [1, 6]]) }
+    let(:check_king) { double("King", position: [0, 7], possible_moves: [[0, 6]]) }
+    let(:checkmate_king) { double("King", position: [0, 7], possible_moves: []) }
+
+    let(:board_in_progress_red) { [
+      red_king
+    ] }
+    let(:board_in_check_red) { [
+      check_king
+    ] }
+    let(:board_in_checkmate_red) { [
+      checkmate_king
+    ] }
+
+    context 'when the game is starting' do
+      it 'the checkmate attribute remains false for both sides' do
+        starting_game.board.update_pieces
+        player_2 = starting_game.player_2
+        starting_game.checkmate?(player_2)
+        expect(starting_game.checkmate).to eq(false)
+      end
+    end
+    
+    context 'when the game is in progress but there is no checkmate' do
+      it 'the checkmate attribute remains false for both sides' do
+        in_progress.player_2.my_pieces = board_in_progress_red
+        player_2 = in_progress.player_2
+        in_progress.checkmate?(player_2)
+        expect(in_progress.checkmate).to eq(false)
+      end
+    end
+
+    context 'when there is a check but no checkmate' do
+      it 'the checkmate attribute remains false for both sides' do
+        in_check.player_2.my_pieces = board_in_check_red
+        player_2 = in_check.player_2 
+        in_check.checkmate?(player_2)
+        expect(in_check.checkmate).to eq(false)
+      end
+    end
+
+    context 'when there is a checkmate' do
+      it 'the checkmate attribute changes to true for the attacked side' do
+        in_checkmate.player_2.my_pieces = board_in_checkmate_red
+        player = in_checkmate.player_2
+        in_checkmate.checkmate?(player)
+        expect(in_checkmate.checkmate).to eq(true)
+      end
     end
   end
 end 
