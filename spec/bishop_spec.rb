@@ -168,7 +168,7 @@ describe Bishop do
     end
 
     context 'when there is an opponent King in the path of the Bishop' do
-      it 'generates a set of moves that includes position of the opponent King' do
+      it 'generates a set of moves that excludes position of the opponent King' do
         bishop.update_possible_moves(board_in_check)
         expect(bishop.possible_moves).to eq([
           [2, 2],
@@ -176,7 +176,6 @@ describe Bishop do
           [0, 0],
           [2, 4],
           [1, 5],
-          [0, 6],
           [4, 2],
           [5, 1],
           [6, 0],

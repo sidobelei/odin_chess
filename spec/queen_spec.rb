@@ -230,14 +230,13 @@ describe Queen do
     end
 
     context 'when an opponent King is in the path of the Queen' do
-      it 'generates a set of moves that includes the position of the opponent King' do
+      it 'generates a set of moves that excludes the position of the opponent King' do
         queen.update_possible_moves(board_checking)
         expect(queen.possible_moves).to eq([
           [2, 3],
           [1, 2],
           [0, 1],
           [2, 4],
-          [1, 4],
           [2, 5],
           [1, 6],
           [0, 7],

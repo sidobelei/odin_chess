@@ -283,7 +283,7 @@ describe Knight do
     end
 
     context 'when the opponent King is in the path of the Knight' do
-      it 'generates a set of moves that includes the position of the opponent King' do
+      it 'generates a set of moves that excludes the position of the opponent King' do
         knight.update_possible_moves(board_in_check)
         expect(knight.possible_moves).to eq([
           [2, 3],
@@ -292,7 +292,6 @@ describe Knight do
           [5, 6],
           [6, 5],
           [6, 3],
-          [5, 2],
           [3, 2]
         ])
       end

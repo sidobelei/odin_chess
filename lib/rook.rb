@@ -30,7 +30,7 @@ class Rook < ChessPiece
         position[0] + move[0], 
         position[1] + move[1]
       ]
-      until out_of_bounds?(temp) || my_piece?(board, temp)
+      until out_of_bounds?(temp) || my_piece?(board, temp) || opponent_king?(board, temp)
         unless in_check?(board, temp)
           new_moves << temp
         end

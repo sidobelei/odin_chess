@@ -43,7 +43,7 @@ attr_accessor :moved, :promoted, :opposite_row, :direction, :en_passant_moves
         position[0] + move[0], 
         position[1] + move[1]
       ]
-      if opponent_piece?(board, temp) && move[2] == 'attack' && in_check?(board, temp) == false
+      if opponent_piece?(board, temp) && move[2] == 'attack' && in_check?(board, temp) == false && opponent_king?(board, temp) == false
         new_moves << temp
       elsif out_of_bounds?(temp) == false && my_piece?(board, temp) == false && opponent_piece?(board, temp) == false && move[2] == 'movement' && in_check?(board, temp) == false
         new_moves << temp

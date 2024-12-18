@@ -184,11 +184,10 @@ describe Rook do
     end
 
     context 'when the opponent King is in the path of the Rook' do
-      it 'generates a set of moves the position of the opponent King' do
+      it 'generates a set of moves that excludess position of the opponent King' do
         rook.update_possible_moves(board_in_check)
         expect(rook.possible_moves).to eq([
           [2, 4],
-          [1, 4],
           [3, 5],
           [3, 6],
           [3, 7],

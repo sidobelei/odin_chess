@@ -400,12 +400,11 @@ describe Pawn do
     end
     
     context 'when the opponent King is in the path of the Pawn' do
-      it 'generates a set of moves that includes the opponent King' do
+      it 'generates a set of moves that excludes the opponent King' do
         moved_pawn_white.update_position([5, 6])
         moved_pawn_white.update_possible_moves(board_in_check)
         expect(moved_pawn_white.possible_moves).to eq([
-          [4, 6],
-          [4, 7]
+          [4, 6]
         ])
       end
     end
