@@ -2,12 +2,13 @@ require_relative 'board'
 require_relative 'player'
 
 class Game
-  attr_accessor :board, :player_1, :player_2
+  attr_accessor :board, :player_1, :player_2, :checkmate
 
   def initialize
     @board = Board.new
     @player_1 = Player.new('white', @board.display.select { |piece| piece.color == 'white'})
     @player_2 = Player.new('red', @board.display.select { |piece| piece.color == 'red'})
+    @checkmate = false
   end
   
   def get_input(player)
@@ -63,5 +64,14 @@ class Game
       end
     end
     return pos, new_pos
+  end
+
+  def checkmate?(player)
+    player.my_pieces.each do |piece|
+      if piece.possible_moves.empty? == false
+        return
+      end
+    end
+    @checkmate = true
   end
 end
