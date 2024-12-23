@@ -182,4 +182,50 @@ describe Game do
       end
     end
   end
+
+  describe 'capture' do
+    subject(:game) { described_class.new }
+    let(:red_queen) { Queen.new('red', [3, 5]) }
+    let(:white_king) { King.new('white', [2, 6]) }
+    let(:white_bishop) { Bishop.new('white', [0, 5]) }
+
+    let(:board) { [
+      red_queen,
+      white_king,
+      white_bishop
+    ] }
+
+    context 'when the enemy piece is captured' do
+      it 'the position of enemy piece is changed to nil' do
+        game.board.display = board
+        enemy_bishop = game.board.display.find {|piece| piece.type == 'bishop' }
+        expect(enemy_bishop.position).to eq([0, 5]) 
+        game.capture([0, 5])
+        expect(enemy_bishop.position).to eq([nil, nil])
+      end
+    end
+
+    context 'when there is no enemy piece to be captured' do
+      it 'no positions for the enemie pieces is changed' do
+        game.board.display = board
+        enemy_bishop = game.board.display.find { |piece| piece.type == 'bishop' }
+        enemy_king = game.board.display.find { |piece| piece.type == 'king' }
+        expect(enemy_bishop.position).to eq([0, 5])
+        expect(enemy_king.position).to eq([2, 6]) 
+        game.capture([3, 2])
+        expect(enemy_bishop.position).to eq([0, 5])
+        expect(enemy_king.position).to eq([2, 6])
+      end
+    end
+
+    context 'when the enemy piece is a King' do
+      it 'the position of the enemy King is not changed' do
+        game.board.display = board
+        enemy_king = game.board.display.find {|piece| piece.type == 'king' }
+        expect(enemy_king.position).to eq([2, 6]) 
+        game.capture([2, 6])
+        expect(enemy_king.position).to eq([2, 6])
+      end
+    end
+  end
 end 
