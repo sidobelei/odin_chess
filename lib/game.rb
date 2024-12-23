@@ -74,4 +74,13 @@ class Game
     end
     @checkmate = true
   end
+
+  def capture(new_pos)
+    board.display.each do |piece|
+      if piece.position == new_pos && piece.type != 'king'
+        piece.update_position([nil, nil])
+        break
+      end
+    end
+  end
 end
