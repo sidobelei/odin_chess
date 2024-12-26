@@ -83,4 +83,22 @@ class Game
       end
     end
   end
+
+  def make_castling_move(king_pos, new_pos)
+    case new_pos
+    when ['0-0-0']
+      rook_pos = [king_pos[0], 0]
+      rook_new_pos = [king_pos[0], 3]
+    when ['0-0']
+      rook_pos = [king_pos[0], 7]
+      rook_new_pos = [king_pos[0], 5]
+    else
+      return
+    end
+    board.display.each do |piece|
+      if piece.type == 'rook' && piece.position == rook_pos
+        piece.update_position(rook_new_pos)
+      end
+    end
+  end
 end
