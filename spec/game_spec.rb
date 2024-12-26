@@ -183,7 +183,7 @@ describe Game do
     end
   end
 
-  describe 'capture' do
+  describe '#capture' do
     subject(:game) { described_class.new }
     let(:red_queen) { Queen.new('red', [3, 5]) }
     let(:white_king) { King.new('white', [2, 6]) }
@@ -225,6 +225,55 @@ describe Game do
         expect(enemy_king.position).to eq([2, 6]) 
         game.capture([2, 6])
         expect(enemy_king.position).to eq([2, 6])
+      end
+    end
+  end
+
+  describe '#make_castling_move' do
+    subject(:game) { described_class.new }
+    let(:king) { King.new('red', [0, 4]) }
+    let(:left_rook) { Rook.new('red', [0, 0]) }
+    let(:right_rook) { Rook.new('red', [0, 7]) }
+
+    let(:board) { [
+      king,
+      left_rook,
+      right_rook
+    ] }
+    
+    context 'when the King makes a queenside castling move' do
+      it 'the queenside rook makes a castling move' do
+        game.board.display = board
+        queenside_rook = game.board.display.find { |piece| piece.position == [0, 0] }
+        expect(queenside_rook.position).to eq([0, 0])
+        king_pos = king.position
+        game.make_castling_move(king_pos, ['0-0-0'])
+        expect(queenside_rook.position).to eq([0, 3])
+      end
+    end
+
+    context 'when the King makes a kingside castling move' do
+      it 'the kingside rook makes a castling move' do
+        game.board.display = board
+        kingside_rook = game.board.display.find { |piece| piece.position == [0, 7] }
+        expect(kingside_rook.position).to eq([0, 7])
+        king_pos = king.position
+        game.make_castling_move(king_pos, ['0-0'])
+        expect(kingside_rook.position).to eq([0, 5])
+      end
+    end
+
+    context 'when the King makes a non castling move' do
+      it 'no rooks are moved' do
+        game.board.display = board
+        queenside_rook = game.board.display.find { |piece| piece.position == [0, 0] }
+        kingside_rook = game.board.display.find { |piece| piece.position == [0, 7] }
+        expect(queenside_rook.position).to eq([0, 0])
+        expect(kingside_rook.position).to eq([0, 7])
+        king_pos = king.position
+        game.make_castling_move(king_pos, [0, 3])
+        expect(queenside_rook.position).to eq([0, 0])
+        expect(kingside_rook.position).to eq([0, 7])
       end
     end
   end
