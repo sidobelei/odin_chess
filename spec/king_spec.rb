@@ -74,10 +74,10 @@ describe King do
 
     context 'when a castling move is made' do
       it 'updates its position and returns the new Rook position' do
-        expect(unmoved_white_king.update_position(['0-0-0'])).to eq([unmoved_white_king.position[0], 3])
+        unmoved_white_king.update_position(['0-0-0'])
         expect(unmoved_white_king.position).to eq([unmoved_white_king.position[0], 2])
 
-        expect(unmoved_white_king.update_position(['0-0'])).to eq([unmoved_white_king.position[0], 5])
+        unmoved_white_king.update_position(['0-0'])
         expect(unmoved_white_king.position).to eq([unmoved_white_king.position[0], 6])
       end
     end

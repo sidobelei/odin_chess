@@ -11,12 +11,11 @@ class King < ChessPiece
   def update_position(new_position) 
     if new_position == ['0-0-0']
       @position = [position[0], 2]
-      return [position[0], 3]
     elsif new_position == ['0-0']
       @position = [position[0], 6]
-      return [position[0], 5]
+    else
+      @position = new_position
     end
-    @position = new_position
     @moved += 1
   end
 
