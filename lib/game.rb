@@ -101,4 +101,27 @@ class Game
       end
     end
   end
+
+  def promote_pawn(color, new_pos)
+    pieces = ['queen', 'bishop', 'knight', 'rook']
+      new_piece = nil
+      until new_piece
+        temp = gets.chomp.downcase
+        if pieces.include?(temp) 
+          new_piece = temp
+        end
+      end
+      promoted_pawn = nil
+      case new_piece
+      when 'queen'
+        promoted_pawn = ChessPiece.new(color, 'Q', 'queen', new_pos)
+      when 'bishop'
+        promoted_pawn = ChessPiece.new(color, 'B', 'bishop', new_pos)
+      when 'knight'
+        promoted_pawn = ChessPiece.new(color, 'N', 'knight', new_pos)
+      when 'rook'
+        promoted_pawn = ChessPiece.new(color, 'R', 'rook', new_pos)
+      end
+      return promoted_pawn 
+  end
 end
