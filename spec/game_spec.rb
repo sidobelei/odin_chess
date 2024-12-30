@@ -277,4 +277,71 @@ describe Game do
       end
     end
   end
+
+  describe '#promote_pawn' do
+    subject(:game) { described_class.new }
+    let(:promoted_pawn) { Pawn.new('white', [0, 5]) }
+    let(:pawn_color) { promoted_pawn.color }
+    let(:board) { [promoted_pawn] }
+    
+    context 'when a Pawn is promoted to a Queen' do
+      before do
+        allow(game).to receive(:gets).and_return('queen')
+      end
+
+      it 'returns a Queen object' do
+        game.board.display = board 
+        new_piece = game.promote_pawn(pawn_color, [0, 5])
+        expect(new_piece.type).to eq('queen')
+      end
+    end
+
+    context 'when a Pawn is promoted to a Bishop' do
+      before do
+        allow(game).to receive(:gets).and_return('bishop')
+      end
+
+      it 'returns a Bishop object' do
+        game.board.display = board 
+        new_piece = game.promote_pawn(pawn_color, [0, 5])
+        expect(new_piece.type).to eq('bishop')
+      end
+    end
+
+    context 'when a Pawn is promoted to a Knight' do
+      before do
+        allow(game).to receive(:gets).and_return('knight')
+      end
+
+      it 'returns a Knight object' do
+        game.board.display = board 
+        new_piece = game.promote_pawn(pawn_color, [0, 5])
+        expect(new_piece.type).to eq('knight')
+      end
+    end
+
+    context 'when a Pawn is promoted to a Rook' do
+      before do
+        allow(game).to receive(:gets).and_return('rook')
+      end
+
+      it 'returns a Rook object' do
+        game.board.display = board 
+        new_piece = game.promote_pawn(pawn_color, [0, 5])
+        expect(new_piece.type).to eq('rook')
+      end
+    end
+
+    context 'when there is an invalid input given for promotion' do
+      before do
+        allow(game).to receive(:gets).and_return('pawn', 'luffy', 'stars', 'rook')
+      end
+      
+      it 'asks for a valid input till a valid input is given' do
+        game.board.display = board 
+        expect(game).to receive(:gets).exactly(4).times
+        game.promote_pawn(pawn_color, [0, 5])
+      end
+    end
+  end
 end 
