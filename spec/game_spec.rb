@@ -438,4 +438,21 @@ describe Game do
       end
     end
   end
+
+  describe '#declare_winner' do
+    subject(:game) { described_class.new }
+  
+    context 'when there is a winner' do
+      it 'declares the winner of the game' do
+        game.winner = 'Player 1'
+        expect { game.declare_winner }.to output("Player 1 is the winner!\n").to_stdout
+      end
+    end
+
+    context 'when there is not a winner' do
+      it 'does not print anything' do
+        expect { game.declare_winner }.not_to output.to_stdout
+      end
+    end
+  end
 end 
