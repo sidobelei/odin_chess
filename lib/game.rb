@@ -10,6 +10,27 @@ class Game
     @player_2 = Player.new('red', @board.display.select { |piece| piece.color == 'red'})
     @checkmate = false
   end
+
+  def make_move(player, pos, new_pos)
+    player.my_pieces.each do |piece|
+      if piece.position == pos  
+        if piece.type == "pawn" && piece.en_passant_moves.any? { |move| move.include?(new_pos) }
+          opponent_piece = piece.en_passant_moves.find {|move| move[0] == new_pos}
+          capture(opponent_piece[1])
+        elsif piece.type == "king" && (new_pos == ['0-0-0'] || new_pos == ['0-0'])
+          make_castling_move(piece.position, new_pos)
+        elsif piece.type == "pawn" && (new_pos[0] == 0 || new_pos[0] == 7)
+          promoted_pawn = promote_pawn(piece.color, new_pos)
+          board.display << promoted_pawn
+          player.my_pieces << promoted_pawn
+        else
+          capture(new_pos)
+        end
+        piece.update_position(new_pos)
+        break
+      end
+    end
+  end
   
   def get_input(player)
     puts "#{player.color.capitalize}'s Turn: "
