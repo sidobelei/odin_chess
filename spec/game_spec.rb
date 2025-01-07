@@ -344,4 +344,98 @@ describe Game do
       end
     end
   end
+
+  describe '#make_move' do
+    subject(:game) { described_class.new }
+    let(:en_passant_pawn) { Pawn.new('red', [4, 0]) }
+    let(:en_passant_captured) { Pawn.new('white', [4, 1]) }
+    let(:king_castling) { King.new('white', [7, 4]) }
+    let(:rook_castling) { Rook.new('white', [7, 7]) }
+    let(:pawn_promoted) { Pawn.new('red', [6, 6]) }
+    let(:new_bishop) { ChessPiece.new('red', 'B', 'bishop', [7, 7]) }
+    let(:queen_caputring) { Queen.new('red', [1, 6])}
+    let(:knight_captured) { Knight.new('white', [1, 5]) }
+    let(:pawn_moving) { Pawn.new('red', [1, 1]) }
+    let(:board) { [
+      en_passant_pawn,
+      en_passant_captured,
+      king_castling,
+      rook_castling,
+      pawn_promoted,
+      queen_caputring,
+      knight_captured,
+      pawn_moving
+    ] }    
+
+    context 'when the player makes an en passant move' do
+      it 'updates the position of the Pawn that made the en passant move' do
+        en_passant_pawn.en_passant_moves = [[5, 1]]
+        game.board.display = board
+        game.player_2.my_pieces = game.board.display.select { |piece| piece.color == 'red' }  
+        expect(game).to receive(:capture)
+        expect(en_passant_pawn).to receive(:update_position)
+        game.make_move(game.player_2, [4, 0], [5, 1])
+      end
+    end
+
+    context 'when the player makes a castling move' do
+      it 'updates the position of the King that made the castling move' do
+        game.board.display = board
+        game.player_1.my_pieces = game.board.display.select { |piece| piece.color == 'white' }
+        expect(game).to receive(:make_castling_move)
+        expect(king_castling).to receive(:update_position)
+        game.make_move(game.player_1, [7, 4], ['0-0'])
+      end
+    end
+
+    context 'when the player promotes their pawn' do
+      before do
+        allow(game).to receive(:promote_pawn).and_return(new_bishop)
+      end
+      it 'updates the position of the promoted Pawn and ' do
+        game.board.display = board
+        game.player_2.my_pieces = game.board.display.select { |piece| piece.color == 'red' }
+        expect(game).to receive(:promote_pawn)
+        expect(pawn_promoted).to receive(:update_position)
+        game.make_move(game.player_2, [6, 6], [7, 6])
+        expect(game.board.display).to include(new_bishop)
+        expect(game.player_2.my_pieces).to include(new_bishop)
+      end
+    end
+
+    context 'when the player captures an enemy piece' do
+      it 'the position of the captured piece is nil and the new position of the caputring piece is where the captured piece was' do
+        game.board.display = board
+        game.player_1.my_pieces = game.board.display.select { |piece| piece.color == 'white' }
+        game.player_2.my_pieces = game.board.display.select { |piece| piece.color == 'red' } 
+        capturing_piece = game.board.display.find { |piece| piece.color == 'red' && piece.type == 'queen' }
+        captured_piece = game.board.display.find { |piece| piece.color == 'white' && piece.type == 'knight' } 
+        expect(capturing_piece.position).to eq([1, 6])
+        expect(captured_piece.position).to eq([1, 5])
+        game.make_move(game.player_2, [1, 6], [1, 5])
+        expect(capturing_piece.position).to eq([1, 5])
+        expect(captured_piece.position).to eq([nil, nil])
+      end
+    end
+
+    context 'when the player does not capture an enemy piece' do
+      it "the player's piece is moved to a new position" do
+        game.board.display = board
+        game.player_2.my_pieces = game.board.display.select { |piece| piece.color == 'red' } 
+        expect(pawn_moving.position).to eq([1, 1])
+        game.make_move(game.player_2, [1, 1], [2, 1])
+        expect(pawn_moving.position).to eq([2, 1])
+      end
+    end
+
+    context 'when the player tries to move a piece that does not exist' do
+      it 'the board does not change' do
+        game.board.display = board
+        game.player_1.my_pieces = game.board.display.select { |piece| piece.color == 'white' }
+        old_board = game.board.display
+        game.make_move(game.player_1, [4, 5], [3, 7])
+        expect(game.board.display).to eq(old_board)
+      end
+    end
+  end
 end 
