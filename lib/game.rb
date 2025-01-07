@@ -2,13 +2,14 @@ require_relative 'board'
 require_relative 'player'
 
 class Game
-  attr_accessor :board, :player_1, :player_2, :checkmate
+  attr_accessor :board, :player_1, :player_2, :checkmate, :winner
 
   def initialize
     @board = Board.new
     @player_1 = Player.new('white', @board.display.select { |piece| piece.color == 'white'})
     @player_2 = Player.new('red', @board.display.select { |piece| piece.color == 'red'})
     @checkmate = false
+    @winner = nil
   end
 
   def make_move(player, pos, new_pos)
@@ -144,5 +145,11 @@ class Game
         promoted_pawn = ChessPiece.new(color, 'R', 'rook', new_pos)
       end
       return promoted_pawn 
+  end
+
+  def declare_winner
+    unless @winner.nil?
+      puts "#{@winner} is the winner!"
+    end
   end
 end
