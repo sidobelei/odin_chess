@@ -673,57 +673,63 @@ describe Pawn do
     ] }
 
     context 'when there is no opportunity for an en passant move' do
-      it 'no extra move is added to possible_moves' do
+      it 'no extra move is added to possible_moves and en_passant_moves' do
         pawn_white.possible_moves = [[2, 1]]
         old_white_moves = pawn_white.possible_moves   
         pawn_white.add_en_passant(board_no_en_passant)
         expect(pawn_white.possible_moves).to eq(old_white_moves)
+        expect(pawn_white.en_passant_moves).to eq([])
 
         pawn_red.possible_moves = [[5, 6]]
         old_red_moves = pawn_red.possible_moves
         pawn_red.add_en_passant(board_no_en_passant)
         expect(pawn_red.possible_moves).to eq(old_red_moves)
+        expect(pawn_red.en_passant_moves).to eq([])
       end    
     end
 
     context 'when there is an en passant opportunity to the left of the pawn' do
-      it 'adds an extra move to possible_moves' do 
+      it 'adds an extra move to possible_moves and in en_passant_moves' do 
         pawn_white.possible_moves = [[2, 1]]
         pawn_white.add_en_passant(board_left_en_passant)
         expect(pawn_white.possible_moves).to eq([
           [2, 1],
           [2, 0]
         ])
+        expect(pawn_white.en_passant_moves).to eq([[[2, 0], [3, 0]]])
 
         pawn_red.possible_moves = [[5, 6]]
         pawn_red.add_en_passant(board_left_en_passant)
         expect(pawn_red.possible_moves).to eq([
           [5, 6],
           [5, 5]
-        ])           
+        ])
+        expect(pawn_red.en_passant_moves).to eq([[[5, 5], [4, 5]]])           
       end    
     end
 
     context 'when there is an en passant opportunity to the right of the pawn' do
-      it 'adds an extra move to possible_moves' do 
+      it 'adds an extra move to possible_moves and in en_passant_moves' do 
         pawn_white.possible_moves = [[2, 1]]
         pawn_white.add_en_passant(board_right_en_passant)
         expect(pawn_white.possible_moves).to eq([
           [2, 1],
           [2, 2]
         ])
+        expect(pawn_white.en_passant_moves).to eq([[[2, 2], [3, 2]]])
 
         pawn_red.possible_moves = [[5, 6]]
         pawn_red.add_en_passant(board_right_en_passant)
         expect(pawn_red.possible_moves).to eq([
           [5, 6],
           [5, 7]
-        ])           
+        ])
+        expect(pawn_red.en_passant_moves).to eq([[[5, 7], [4, 7]]])           
       end     
     end
 
     context 'when there is an en passant opportunity but there is a chess piece in the desired destination' do
-      it 'does not add extra en passant move to possible_moves' do
+      it 'does not add extra en passant move to possible_moves or en_passant_moves' do
         pawn_white.possible_moves = [
           [2, 1],
           [2, 2]
@@ -733,6 +739,7 @@ describe Pawn do
           [2, 1],
           [2, 2]
         ])
+        expect(pawn_white.en_passant_moves).to eq([])
 
         pawn_red.possible_moves = [
           [5, 6],
@@ -743,6 +750,7 @@ describe Pawn do
           [5, 6],
           [5, 7]
         ])
+        expect(pawn_red.en_passant_moves).to eq([])
       end
     end
   end

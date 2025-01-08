@@ -69,8 +69,10 @@ attr_accessor :moved, :promoted, :opposite_row, :direction, :en_passant_moves
         right_en_passant = [position[0] + direction, position[1] + 1]
         if piece.position == on_left && opponent_piece?(board, left_en_passant) == false && my_piece?(board, left_en_passant) == false && in_check?(board, left_en_passant) == false
           @possible_moves << left_en_passant
+          @en_passant_moves << [left_en_passant, on_left]
         elsif piece.position == on_right && opponent_piece?(board, right_en_passant) == false && my_piece?(board, right_en_passant) == false && in_check?(board, right_en_passant) == false
           @possible_moves << right_en_passant
+          @en_passant_moves << [right_en_passant, on_right]
         else
           next
         end
