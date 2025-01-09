@@ -136,13 +136,13 @@ class Game
       promoted_pawn = nil
       case new_piece
       when 'queen'
-        promoted_pawn = ChessPiece.new(color, 'Q', 'queen', new_pos)
+        promoted_pawn = Queen.new(color, new_pos)
       when 'bishop'
-        promoted_pawn = ChessPiece.new(color, 'B', 'bishop', new_pos)
+        promoted_pawn = Bishop.new(color, new_pos)
       when 'knight'
-        promoted_pawn = ChessPiece.new(color, 'N', 'knight', new_pos)
+        promoted_pawn = Knight.new(color, new_pos)
       when 'rook'
-        promoted_pawn = ChessPiece.new(color, 'R', 'rook', new_pos)
+        promoted_pawn = Rook.new(color, new_pos)
       end
       return promoted_pawn 
   end
