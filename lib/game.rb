@@ -34,7 +34,12 @@ class Game
 
   def play
     board.update_pieces
-    players = [@player_1, @player_2]
+    players = nil
+    if player_2.inputs.last == ['save']
+      players = [@player_2, @player_1]
+    else
+      players = [@player_1, @player_2]
+    end
     while checkmate == false
       players.each do |player|
         checkmate?(player)
@@ -82,11 +87,13 @@ class Game
     if /([a-h][1-8]), (([a-h][1-8])|(0-0-0)|(0-0))/.match(input)
       pos, new_pos = convert_to_coords(input)
       if player.valid_move?(pos, new_pos)
+        player.inputs << [input]
         return pos, new_pos
       else
         puts "Invalid Input\n\n"
       end
     elsif input == 'save'
+      player.inputs << [input]
       create_save(self)
       return 'file', 'saved'
     else
