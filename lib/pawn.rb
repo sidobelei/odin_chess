@@ -84,4 +84,23 @@ attr_accessor :moved, :promoted, :opposite_row, :direction, :en_passant_moves
     removed_move = en_passant_moves.shift
     possible_moves.delete(removed_move)
   end
+
+  def to_json(*args)
+    {
+      'color' => @color,
+      'type' => @type,
+      'position' => @position,
+      'moved' => @moved,
+      'promoted' => @promoted,
+      'en_passant_moves' => @en_passant_moves
+    }.to_json
+  end
+
+  def from_json(args)
+    args.each do |key, value|
+      unless key == 'color' || key == 'position' || key == 'type'
+        self.instance_variable_set("@#{key}", value)
+      end  
+    end
+  end
 end

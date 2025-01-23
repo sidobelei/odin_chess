@@ -19,4 +19,15 @@ class Player
     end
     return false
   end
+
+  def to_json(*args)
+    {
+      'color' => @color,
+      'inputs' => @inputs
+    }.to_json
+  end
+
+  def from_json(args)
+    self.instance_variable_set("@inputs", args['inputs'])
+  end
 end

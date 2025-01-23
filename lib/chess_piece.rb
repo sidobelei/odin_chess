@@ -22,7 +22,8 @@ class ChessPiece
     @type = type
     @possible_moves = []
     
-    if position.length == 2 && Array(0..7).include?(position[0]) && Array(0..7).include?(position[1])
+    valid_range = [0, 1, 2, 3, 4, 5, 6, 7, nil]
+    if position.length == 2 && valid_range.include?(position[0]) && valid_range.include?(position[1])
       @position = position
     else
       raise ArgumentError, "Invalid coordinates input"

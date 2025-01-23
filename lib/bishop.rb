@@ -36,4 +36,12 @@ class Bishop < ChessPiece
     end
     @possible_moves = new_moves
   end
+
+  def to_json(*args)
+    {
+      'color' => @color,
+      'type' => @type,
+      'position' => @position
+    }.to_json
+  end
 end

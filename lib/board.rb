@@ -62,4 +62,36 @@ class Board
     board_string = board_string + "     a   b   c   d   e   f   g   h\n\n"
     return board_string
   end
+
+  def to_json(*args)
+    {
+      'display' => @display
+    }.to_json
+  end
+
+  def from_json(args)
+    new_display = []
+    args['display'].each do |piece|
+      new_piece = nil
+      case piece['type']
+      when 'king'
+        new_piece = King.new(piece['color'], piece['position'])
+        new_piece.from_json(piece)
+      when 'queen'
+        new_piece = Queen.new(piece['color'], piece['position'])
+      when 'bishop'
+        new_piece = Bishop.new(piece['color'], piece['position'])
+      when 'knight'
+        new_piece = Knight.new(piece['color'], piece['position'])
+      when 'rook'
+        new_piece = Rook.new(piece['color'], piece['position'])
+        new_piece.from_json(piece)
+      when 'pawn'
+        new_piece = Pawn.new(piece['color'], piece['position'])
+        new_piece.from_json(piece)
+      end
+      new_display << new_piece
+    end
+    self.instance_variable_set("@display", new_display)
+  end
 end

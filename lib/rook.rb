@@ -43,4 +43,17 @@ class Rook < ChessPiece
     end
     @possible_moves = new_moves
   end
+
+  def to_json(*args)
+    {
+      'color' => @color,
+      'type' => @type,
+      'position' => @position,
+      'moved' => @moved
+    }.to_json
+  end
+
+  def from_json(args)
+    self.instance_variable_set("@moved", args['moved'])
+  end
 end

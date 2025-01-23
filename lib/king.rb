@@ -70,4 +70,17 @@ class King < ChessPiece
     @possible_moves.delete(['0-0'])
     @possible_moves.delete(['0-0-0'])
   end
+
+  def to_json(*args)
+    {
+      'color' => @color,
+      'position' => @position,
+      'type' => @type,
+      'moved' => @moved
+    }.to_json
+  end
+
+  def from_json(args)
+    self.instance_variable_set("@moved", args['moved'])
+  end
 end

@@ -1,15 +1,58 @@
 require_relative 'board'
 require_relative 'player'
+require_relative 'file_handler'
 
 class Game
+  include FileHandler
+  
   attr_accessor :board, :player_1, :player_2, :checkmate, :winner
 
+  SAVE_DIRECTORY = './saved_games/'
+
   def initialize
-    @board = Board.new
-    @player_1 = Player.new('white', @board.display.select { |piece| piece.color == 'white'})
-    @player_2 = Player.new('red', @board.display.select { |piece| piece.color == 'red'})
-    @checkmate = false
-    @winner = nil
+    puts 'Do you want to load a saved game?'
+    answer = gets.chomp.downcase
+    if answer == 'yes' || answer == 'y'
+      valid_file = nil
+      file_name = nil
+      until valid_file
+        puts "File name?"
+        file_name = SAVE_DIRECTORY + gets.chomp
+        if File.exist?(file_name)
+          break
+        end
+      end
+      load_save(file_name)
+    else
+      @board = Board.new
+      @player_1 = Player.new('white', @board.display.select { |piece| piece.color == 'white'})
+      @player_2 = Player.new('red', @board.display.select { |piece| piece.color == 'red'})
+      @checkmate = false
+      @winner = nil
+    end
+  end
+
+  def play
+    board.update_pieces
+    players = [@player_1, @player_2]
+    while checkmate == false
+      players.each do |player|
+        checkmate?(player)
+        puts board
+        pos, new_pos = nil, nil
+        while pos.nil? || new_pos.nil? 
+          pos, new_pos = get_input(player)
+        end
+        if pos == 'file' && new_pos == 'saved'
+          puts 'File saved sucessfully'
+          return 
+        else
+          make_move(player, pos, new_pos)
+          board.update_pieces
+        end
+      end
+    end
+    declare_winner
   end
 
   def make_move(player, pos, new_pos)
@@ -35,7 +78,7 @@ class Game
   
   def get_input(player)
     puts "#{player.color.capitalize}'s Turn: "
-    input = gets.chomp
+    input = gets.chomp.downcase
     if /([a-h][1-8]), (([a-h][1-8])|(0-0-0)|(0-0))/.match(input)
       pos, new_pos = convert_to_coords(input)
       if player.valid_move?(pos, new_pos)
@@ -43,6 +86,9 @@ class Game
       else
         puts "Invalid Input\n\n"
       end
+    elsif input == 'save'
+      create_save(self)
+      return 'file', 'saved'
     else
       puts "Invalid Input\n\n"
     end
@@ -151,5 +197,34 @@ class Game
     unless @winner.nil?
       puts "#{@winner} is the winner!"
     end
+  end
+
+  def load_save(game_file)
+    loaded_save = get_save(game_file)
+    loaded_save.each do |key, value|
+      if key == 'board'
+        new_board = Board.new
+        new_board.from_json(value)
+        self.instance_variable_set("@#{key}", new_board)
+      elsif key == 'player_1' || key == 'player_2'
+        new_player = Player.new(value['color'], nil)
+        new_player.from_json(value)
+        self.instance_variable_set("@#{key}", new_player)
+      elsif key == 'checkmate' || key == 'winner'
+        self.instance_variable_set("@#{key}", value)
+      end
+    end
+    @player_1.my_pieces = @board.display.select { |piece| piece.color == 'white' }
+    @player_2.my_pieces = @board.display.select { |piece| piece.color == 'red' }
+  end
+
+  def to_json(*args)
+    {
+      'board' => @board,
+      'player_1' => @player_1,
+      'player_2' => @player_2,
+      'checkmate' => @checkmate,
+      'winner' => @winner
+    }.to_json
   end
 end
