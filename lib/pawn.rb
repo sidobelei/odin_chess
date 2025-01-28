@@ -36,6 +36,7 @@ attr_accessor :moved, :promoted, :opposite_row, :direction, :en_passant_moves
     ]
     movement.each_with_index do |move, index|
       if position == [nil, nil]
+        @possible_moves = new_moves
         return
       end
 
