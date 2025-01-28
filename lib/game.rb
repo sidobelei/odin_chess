@@ -43,6 +43,7 @@ class Game
     while checkmate == false
       players.each do |player|
         checkmate?(player)
+        break if @checkmate
         puts board
         pos, new_pos = nil, nil
         while pos.nil? || new_pos.nil? 
@@ -55,6 +56,7 @@ class Game
           make_move(player, pos, new_pos)
           board.update_pieces
         end
+      @winner = player.color.capitalize
       end
     end
     declare_winner
