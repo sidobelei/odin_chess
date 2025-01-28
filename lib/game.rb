@@ -92,7 +92,12 @@ class Game
   
   def get_input(player)
     puts board
-    puts "#{player.color.capitalize}'s Turn: "
+    in_check_message = ""
+    player.self_check
+    if player.check_status == true
+      in_check_message = 'In Check'
+    end
+    puts "#{player.color.capitalize}'s Turn: " + in_check_message
     input = gets.chomp.downcase
     if /([a-h][1-8]), (([a-h][1-8])|(0-0-0)|(0-0))/.match(input)
       pos, new_pos = convert_to_coords(input)

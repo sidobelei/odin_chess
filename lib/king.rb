@@ -1,11 +1,12 @@
 require_relative 'chess_piece'
 
 class King < ChessPiece
-  attr_accessor :moved
+  attr_accessor :moved, :check_status
 
   def initialize(color, position) 
     super(color, 'K', 'king', position)
     @moved = 0
+    @check_status = false
   end
 
   def update_position(new_position) 
@@ -43,6 +44,11 @@ class King < ChessPiece
     end
     @possible_moves = new_moves
     add_castling(board) 
+    if in_check?(board, @position)
+      @check_status = true
+    else
+      @check_status = false
+    end
   end
   
   def add_castling(board)
@@ -76,11 +82,13 @@ class King < ChessPiece
       'color' => @color,
       'position' => @position,
       'type' => @type,
-      'moved' => @moved
+      'moved' => @moved,
+      'check_status' => @check_status
     }.to_json
   end
 
   def from_json(args)
     self.instance_variable_set("@moved", args['moved'])
+    self.instance_variable_set("@check_status", args['check_status'])
   end
 end
