@@ -45,6 +45,11 @@ class Game
     puts '    -- Example: a2, a3'
     puts '  - To save a game just type in "save" and follow the prompts.'
     puts '  - At the beginning of each new game, you can load any previous saves by following the prompts.'
+    puts "  - When there's an opportunity to make an en passant move the new location input of your pawn should be where it ends up"
+    puts '  - Castling:'
+    puts '    -- For castling on the queen side the new location input is 0-0-0'
+    puts '    -- For castling on the king side the new location input is 0-0'
+    puts "  -For promoting pawns follow the prompts that appear after you've reached the opponent's back rank"
     puts "  - Have fun!\n\n"
     while checkmate == false
       players.each do |player|
