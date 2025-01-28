@@ -40,6 +40,12 @@ class Game
     else
       players = [@player_1, @player_2]
     end
+    puts "\nInstructions:"
+    puts '  - When it is your turn to make a move, type in the starting position of your piece, comma, then the new location.'
+    puts '    -- Example: a2, a3'
+    puts '  - To save a game just type in "save" and follow the prompts.'
+    puts '  - At the beginning of each new game, you can load any previous saves by following the prompts.'
+    puts "  - Have fun!\n\n"
     while checkmate == false
       players.each do |player|
         checkmate?(player)
