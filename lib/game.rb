@@ -58,6 +58,8 @@ class Game
       @winner = player.color.capitalize
       end
     end
+    board.update_pieces
+    puts board
     declare_winner
   end
 
@@ -205,7 +207,7 @@ class Game
 
   def declare_winner
     unless @winner.nil?
-      puts "#{@winner} is the winner!"
+      puts "Checkmate, #{@winner} is the winner!"
     end
   end
 
