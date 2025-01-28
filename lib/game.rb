@@ -16,7 +16,7 @@ class Game
       valid_file = nil
       file_name = nil
       until valid_file
-        puts "File name?"
+        puts 'File name? Include the ".json" extension.'
         file_name = SAVE_DIRECTORY + gets.chomp
         if File.exist?(file_name)
           break
@@ -55,7 +55,7 @@ class Game
           pos, new_pos = get_input(player)
         end
         if pos == 'file' && new_pos == 'saved'
-          puts 'File saved sucessfully'
+          puts 'File saved successfully'
           return 
         else
           make_move(player, pos, new_pos)
