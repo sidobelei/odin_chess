@@ -44,7 +44,6 @@ class Game
       players.each do |player|
         checkmate?(player)
         break if @checkmate
-        puts board
         pos, new_pos = nil, nil
         while pos.nil? || new_pos.nil? 
           pos, new_pos = get_input(player)
@@ -84,6 +83,7 @@ class Game
   end
   
   def get_input(player)
+    puts board
     puts "#{player.color.capitalize}'s Turn: "
     input = gets.chomp.downcase
     if /([a-h][1-8]), (([a-h][1-8])|(0-0-0)|(0-0))/.match(input)
