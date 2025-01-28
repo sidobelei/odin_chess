@@ -183,6 +183,7 @@ class Game
     pieces = ['queen', 'bishop', 'knight', 'rook']
       new_piece = nil
       until new_piece
+        puts 'What would you like to promote your pawn to?'
         temp = gets.chomp.downcase
         if pieces.include?(temp) 
           new_piece = temp
