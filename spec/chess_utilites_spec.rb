@@ -89,38 +89,69 @@ describe ChessUtilites do
     ] }
 
     context 'when the King is not in check' do
+      before do
+        in_check_king.possible_moves = [[3, 5]]
+        noncheck_knight.possible_moves = [[2, 4]]
+        noncheck_rook.possible_moves = [[2, 5]]
+        noncheck_bishop.possible_moves = [[3, 6]]
+        noncheck_queen.possible_moves = [[2, 7]]
+      end
+      
       it 'returns false' do
-        board_no_check.each { |piece| piece.update_possible_moves(board_no_check) }
         expect(in_check_king.in_check?(board_no_check, [2, 6])).to eq(false)
       end
     end
 
     context 'when the King is in check by one chess piece' do
+      before do
+        in_check_king.possible_moves = [[3, 5]]
+        knight_check.possible_moves = [[2, 6]]
+        noncheck_knight.possible_moves = [[2, 2]]
+        noncheck_rook.possible_moves = [[3, 7]]
+        noncheck_bishop.possible_moves = [[3, 6]]
+        noncheck_queen.possible_moves = [[7, 6]]
+      end
       it 'returns true' do
-        board_one_check.each { |piece| piece.update_possible_moves(board_one_check) }
         expect(in_check_king.in_check?(board_one_check, [2, 6])).to eq(true)
       end
     end
 
     context 'when the King is in check by multiple pieces' do
+      before do
+        in_check_king.possible_moves = []
+        pawn_check.possible_moves = [[2, 6]]
+        rook_check.possible_moves = [[2, 6]]
+        bishop_check.possible_moves = [[2, 6]]
+        knight_check.possible_moves = [[2, 6]]
+        queen_check.possible_moves = [[2, 6]]
+      end
       it 'returns true' do
-        board_multi_check.each { |piece| piece.update_possible_moves(board_multi_check) }
         expect(in_check_king.in_check?(board_multi_check, [2, 6])).to eq(true)
       end
     end
 
     context 'when the King captures a piece that puts itself in check' do
-      it 'returns true' do
+      before do
         in_check_king.update_position([1, 6])
-        board_capture_check.each { |piece| piece.update_possible_moves(board_capture_check) }
+        in_check_king.possible_moves = [[2, 6]]
+        noncheck_pawn.possible_moves = []
+        knight_check.possible_moves = [[2, 6]]
+      end
+      
+      it 'returns true' do
         expect(in_check_king.in_check?(board_capture_check, [1, 6])).to eq(false)
         expect(in_check_king.in_check?(board_capture_check, [2, 6])).to eq(true)
       end
     end
 
-    context 'when a piece tries to move but it would its King in check' do
+    context "when a piece tries to move but it would place it's King in check" do
+      before do
+        in_check_king.possible_moves = [[1, 6]]
+        rook_check.possible_moves = [[1, 5]]
+        moving_rook.possible_moves = [2, 4]
+      end
+      
       it 'returns true' do
-        board_moved_check.each { |piece| piece.update_possible_moves(board_moved_check) }
         expect(moving_rook.in_check?(board_moved_check, [2, 5])).to eq(false)
         expect(moving_rook.in_check?(board_moved_check, [1, 5])).to eq(true)
       end
