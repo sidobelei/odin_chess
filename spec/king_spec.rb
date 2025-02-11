@@ -29,6 +29,11 @@ describe King do
         expect(king_white.moved).to eq(0)
         expect(king_red.moved).to eq(0)
       end
+
+      it 'assigns false to the check_status attribute' do
+        expect(king_white.check_status).to eq(false)
+        expect(king_red.check_status).to eq(false)
+      end
     end
   end
 
@@ -1113,6 +1118,7 @@ describe King do
             [5, 3],
             [4, 3]
           ])
+          expect(king_white.check_status).to eq(false)
         end
       end
 
@@ -1127,6 +1133,7 @@ describe King do
             [1, 3],
             [0, 3]
           ])
+          expect(king_white.check_status).to eq(false)
         end
       end
 
@@ -1140,6 +1147,7 @@ describe King do
             [7, 5],
             [7, 3]
           ])
+          expect(king_white.check_status).to eq(false)
         end
       end
       
@@ -1154,10 +1162,11 @@ describe King do
             [4, 1],
             [4, 0]
           ])
+          expect(king_white.check_status).to eq(false)
         end
       end
 
-      context 'when  the King is on the right edage of the board' do
+      context 'when the King is on the right edge of the board' do
         it 'generates the correct set of moves' do
           king_white.update_position([4, 7])
           king_white.update_possible_moves(board_empty)
@@ -1168,6 +1177,7 @@ describe King do
             [5, 6],
             [4, 6]
           ])
+          expect(king_white.check_status).to eq(false)
         end
       end
 
@@ -1180,6 +1190,7 @@ describe King do
             [1, 1],
             [1, 0]
           ])
+          expect(king_white.check_status).to eq(false)
         end
       end
 
@@ -1192,6 +1203,7 @@ describe King do
             [1, 6],
             [0, 6]
           ])
+          expect(king_white.check_status).to eq(false)
         end
       end
 
@@ -1204,6 +1216,7 @@ describe King do
             [6, 1],
             [7, 1]
           ])
+          expect(king_white.check_status).to eq(false)
         end
       end
 
@@ -1216,6 +1229,7 @@ describe King do
             [6, 7],
             [7, 6]
           ])
+          expect(king_white.check_status).to eq(false)
         end
       end
     end
@@ -1226,6 +1240,7 @@ describe King do
           king_red.update_position([3, 4])
           king_red.update_possible_moves(board_opposing_boxed)
           expect(king_red.possible_moves).to eq([])
+          expect(king_red.check_status).to eq(false) #
         end
       end
 
@@ -1234,6 +1249,7 @@ describe King do
           king_red.update_position([3, 4])
           king_red.update_possible_moves(board_opposing_check)
           expect(king_red.possible_moves).to eq([])
+          expect(king_red.check_status).to eq(true)
         end
       end
 
@@ -1242,15 +1258,17 @@ describe King do
           king_red.update_position([3, 4])
           king_red.update_possible_moves(board_opposing_boxed_check)
           expect(king_red.possible_moves).to eq([])
+          expect(king_red.check_status).to eq(true)
         end
       end
     end
 
-    context 'when there are chess pieces of ths same color' do
+    context 'when there are chess pieces of the same color' do
       it 'does not generate any moves' do
         king_red.update_position([4, 4])
         king_red.update_possible_moves(board_same_boxed)
         expect(king_red.possible_moves).to eq([])
+        expect(king_red.check_status).to eq(false)
       end
     end
 
@@ -1259,6 +1277,7 @@ describe King do
         king_red.update_position([3, 4])
         king_red.update_possible_moves(board_mixed)
         expect(king_red.possible_moves).to eq([[3, 3]])
+        expect(king_red.check_status).to eq(true)
       end
     end
 
@@ -1274,6 +1293,7 @@ describe King do
           ['0-0-0'],
           ['0-0']
         ])
+        expect(king_red.check_status).to eq(false)
       end
     end
   end
