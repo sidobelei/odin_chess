@@ -54,7 +54,9 @@ module ChessUtilites
       squares = 1
       if move['continuous'] == true
         until out_of_bounds?(temp) || my_piece?(temp_board, temp)
-          if squares == 1 && temp_board.any? { |piece| piece.position == temp && piece.type == 'pawn' && piece.color != @color } && move['direction'] == 'diagonal'
+          if squares == 1 && temp_board.any? { |piece| piece.position == temp && piece.type == 'pawn' && piece.color != @color } && (move['position'] == [-1, -1] || move['position'] == [-1, 1]) && my_king.color == 'white'
+            return true
+          elsif squares == 1 && temp_board.any? { |piece| piece.position == temp && piece.type == 'pawn' && piece.color != @color } && (move['position'] == [1, -1] || move['position'] == [1, 1]) && my_king.color == 'red'
             return true
           elsif squares == 1 && temp_board.any? { |piece| piece.position == temp && piece.type == 'king' && piece.color != @color } && (move['direction'] == 'diagonal' || move['direction'] == 'straight')
             return true
