@@ -34,6 +34,10 @@ describe Player do
       it 'assigns an empty array to the inputs array' do
         expect(new_player.inputs).to eq([])
       end
+
+      it 'assigns false to check_status attribute' do
+        expect(new_player.check_status).to eq(false)
+      end
     end
   end
 
@@ -86,6 +90,32 @@ describe Player do
       it 'returns true' do
         player.my_pieces = player_pieces
         expect(player.valid_move?([0, 6], [2, 7])).to eq(true)
+      end
+    end
+  end
+
+  describe '#self_check' do
+    let(:player_color) { 'red' }
+    let(:player_pieces_check) { [
+      double(type: 'king', color: player_color, check_status: true)
+    ] }
+    let(:player_pieces_no_check) { [
+      double(type: 'king', color: player_color, check_status: false)
+    ] }
+    subject(:player_in_check) { described_class.new(player_color, player_pieces_check) }
+    subject(:player_not_in_check) { described_class.new(player_color, player_pieces_no_check) }
+    
+    context 'when their King is in check' do
+      it 'the check_status attribute is changed to true' do
+        player_in_check.self_check
+        expect(player_in_check.check_status).to eq(true)
+      end
+    end
+
+    context 'when their King is not in check' do
+      it 'the check_status attribute is false' do
+        player_not_in_check.self_check
+        expect(player_not_in_check.check_status).to eq(false)
       end
     end
   end
