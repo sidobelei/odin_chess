@@ -1,4 +1,4 @@
-require_relative '../lib/rook'
+require_relative '../../lib/pieces/rook'
 
 describe Rook do
   describe '#initialize' do

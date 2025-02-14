@@ -1,4 +1,4 @@
-require_relative '../lib/queen'
+require_relative '../../lib/pieces/queen'
 
 describe Queen do
   describe '#initialize' do

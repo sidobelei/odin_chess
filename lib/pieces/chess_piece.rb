@@ -1,4 +1,4 @@
-require_relative 'chess_utilities'
+require_relative '../chess_utilities'
 
 class ChessPiece 
   include ChessUtilites

@@ -1,4 +1,4 @@
-require_relative '../lib/pawn'
+require_relative '../../lib/pieces/pawn'
 
 describe Pawn do
   describe '#initialize' do

@@ -1,4 +1,4 @@
-require_relative '../lib/chess_piece'
+require_relative '../../lib/pieces/chess_piece'
 
 describe ChessPiece do
   describe '#initialize' do
