@@ -4,6 +4,11 @@ describe Game do
   describe '#initialize' do
     subject(:game) { described_class.new }
     
+    before do
+      allow($stdout).to receive(:puts)
+      allow(game).to receive(:gets).and_return('no')
+    end
+
     context 'when a new Game object is initialized' do
       it 'creates a new board object' do
         expect(game.board).to be_a(Board)
@@ -22,6 +27,11 @@ describe Game do
 
   describe '#convert_to_coords' do
     subject(:game) { described_class.new }
+
+    before do
+      allow($stdout).to receive(:puts)
+      allow(game).to receive(:gets).and_return('no')
+    end
     
     context 'when a regular move is made' do
       it 'converts the string to the correct position and new location' do
@@ -45,7 +55,10 @@ describe Game do
     subject(:invalid_new_position) { described_class.new }
     subject(:valid_inputs) { described_class.new }
     subject(:valid_castling_kingside) { described_class.new } 
-    subject(:valid_castling_queenside) { described_class.new } 
+    subject(:valid_castling_queenside) { described_class.new }
+    let(:board_output) { "   +---+---+---+---+---+---+---+---+\n8  | \e[1m\e[31mR\e[0m | \e[1m\e[31mN\e[0m | \e[1m\e[31mB\e[0m | \e[1m\e[31mQ\e[0m | \e[1m\e[31mK\e[0m | \e[1m\e[31mB\e[0m | \e[1m\e[31mN\e[0m | \e[1m\e[31mR\e[0m |\n   +---+---+---+---+---+---+---+---+\n7  | \e[1m\e[31mP\e[0m | \e[1m\e[31mP\e[0m | \e[1m\e[31mP\e[0m | \e[1m\e[31mP\e[0m | \e[1m\e[31mP\e[0m | \e[1m\e[31mP\e[0m | \e[1m\e[31mP\e[0m | \e[1m\e[31mP\e[0m |\n   +---+---+---+---+---+---+---+---+\n6  |   |   |   |   |   |   |   |   |\n   +---+---+---+---+---+---+---+---+\n5  |   |   |   |   |   |   |   |   |\n   +---+---+---+---+---+---+---+---+\n4  |   |   |   |   |   |   |   |   |\n   +---+---+---+---+---+---+---+---+\n3  |   |   |   |   |   |   |   |   |\n   +---+---+---+---+---+---+---+---+\n2  | \e[1m\e[37mP\e[0m | \e[1m\e[37mP\e[0m | \e[1m\e[37mP\e[0m | \e[1m\e[37mP\e[0m | \e[1m\e[37mP\e[0m | \e[1m\e[37mP\e[0m | \e[1m\e[37mP\e[0m | \e[1m\e[37mP\e[0m |\n   +---+---+---+---+---+---+---+---+\n1  | \e[1m\e[37mR\e[0m | \e[1m\e[37mN\e[0m | \e[1m\e[37mB\e[0m | \e[1m\e[37mQ\e[0m | \e[1m\e[37mK\e[0m | \e[1m\e[37mB\e[0m | \e[1m\e[37mN\e[0m | \e[1m\e[37mR\e[0m |\n   +---+---+---+---+---+---+---+---+\n     a   b   c   d   e   f   g   h\n\n" }
+    let(:turn_message_white) { "White's Turn: \n" }
+    let(:turn_message_red) { "Red's Turn: \n" }   
 
     before do
       allow(invalid_inputs).to receive(:gets).and_return("u3, a0")
@@ -65,7 +78,7 @@ describe Game do
       it 'returns Invalid Input message' do
         invalid_inputs.board.update_pieces
         player = invalid_inputs.player_1
-        expect{ invalid_inputs.get_input(player) }.to output("#{player.color.capitalize}'s Turn: \nInvalid Input\n\n").to_stdout
+        expect{ invalid_inputs.get_input(player) }.to output(board_output + turn_message_white + "Invalid Input\n\n").to_stdout
       end  
     end
 
@@ -75,8 +88,8 @@ describe Game do
         iivi_player = invalid_input_valid_input.player_2
         valid_input_invalid_input.board.update_pieces
         viii_player = valid_input_invalid_input.player_2
-        expect{ invalid_input_valid_input.get_input(iivi_player) }.to output("#{iivi_player.color.capitalize}'s Turn: \nInvalid Input\n\n").to_stdout
-        expect{ valid_input_invalid_input.get_input(viii_player) }.to output("#{viii_player.color.capitalize}'s Turn: \nInvalid Input\n\n").to_stdout
+        expect{ invalid_input_valid_input.get_input(iivi_player) }.to output(board_output + turn_message_red + "Invalid Input\n\n").to_stdout
+        expect{ valid_input_invalid_input.get_input(viii_player) }.to output(board_output + turn_message_red + "Invalid Input\n\n").to_stdout
       end
     end
 
@@ -84,7 +97,7 @@ describe Game do
       it 'returns Invalid Input message' do
         invalid_position.board.update_pieces
         player = invalid_position.player_1
-        expect{ invalid_position.get_input(player) }.to output("#{player.color.capitalize}'s Turn: \nInvalid Input\n\n").to_stdout
+        expect{ invalid_position.get_input(player) }.to output(board_output + turn_message_white + "Invalid Input\n\n").to_stdout
       end
     end
 
@@ -92,12 +105,12 @@ describe Game do
       it 'returns Invalid Input message' do
         invalid_new_position.board.update_pieces
         player = invalid_new_position.player_2
-        expect{ invalid_new_position.get_input(player) }.to output("#{player.color.capitalize}'s Turn: \nInvalid Input\n\n").to_stdout
+        expect{ invalid_new_position.get_input(player) }.to output(board_output + turn_message_red + "Invalid Input\n\n").to_stdout
       end
     end
 
     context 'when both coordinates are valid' do
-      it 'returns the ' do
+      it 'returns the valid input' do
         valid_inputs.board.update_pieces
         player = valid_inputs.player_1
         expect(valid_inputs.get_input(player)).to eq([[6, 4], [4, 4]])
@@ -145,6 +158,14 @@ describe Game do
     let(:board_in_checkmate_red) { [
       checkmate_king
     ] }
+
+    before do
+      allow($stdout).to receive(:puts)
+      allow(starting_game).to receive(:gets).and_return('no')
+      allow(in_progress).to receive(:gets).and_return('no')
+      allow(in_check).to receive(:gets).and_return('no')
+      allow(in_checkmate).to receive(:gets).and_return('no')
+    end
 
     context 'when the game is starting' do
       it 'the checkmate attribute remains false for both sides' do
@@ -195,6 +216,11 @@ describe Game do
       white_bishop
     ] }
 
+    before do
+      allow($stdout).to receive(:puts)
+      allow(game).to receive(:gets).and_return('no')
+    end
+
     context 'when the enemy piece is captured' do
       it 'the position of enemy piece is changed to nil' do
         game.board.display = board
@@ -240,6 +266,11 @@ describe Game do
       left_rook,
       right_rook
     ] }
+
+    before do
+      allow($stdout).to receive(:puts)
+      allow(game).to receive(:gets).and_return('no')
+    end
     
     context 'when the King makes a queenside castling move' do
       it 'the queenside rook makes a castling move' do
@@ -283,6 +314,11 @@ describe Game do
     let(:promoted_pawn) { Pawn.new('white', [0, 5]) }
     let(:pawn_color) { promoted_pawn.color }
     let(:board) { [promoted_pawn] }
+
+    before do
+      allow($stdout).to receive(:puts)
+      allow(game).to receive(:gets).and_return('no')
+    end
     
     context 'when a Pawn is promoted to a Queen' do
       before do
@@ -356,6 +392,7 @@ describe Game do
     let(:queen_caputring) { Queen.new('red', [1, 6])}
     let(:knight_captured) { Knight.new('white', [1, 5]) }
     let(:pawn_moving) { Pawn.new('red', [1, 1]) }
+    
     let(:board) { [
       en_passant_pawn,
       en_passant_captured,
@@ -366,6 +403,11 @@ describe Game do
       knight_captured,
       pawn_moving
     ] }    
+
+    before do
+      allow($stdout).to receive(:puts)
+      allow(game).to receive(:gets).and_return('no')
+    end
 
     context 'when the player makes an en passant move' do
       it 'updates the position of the Pawn that made the en passant move' do
@@ -445,13 +487,13 @@ describe Game do
     context 'when there is a winner' do
       it 'declares the winner of the game' do
         game.winner = 'Player 1'
-        expect { game.declare_winner }.to output("Player 1 is the winner!\n").to_stdout
+        expect { game.declare_winner }.to output("Checkmate, Player 1 is the winner!\n").to_stdout
       end
     end
 
     context 'when there is not a winner' do
       it 'does not print anything' do
-        expect { game.declare_winner }.not_to output.to_stdout
+        expect { game.declare_winner }.to output("Do you want to load a saved game?\n").to_stdout
       end
     end
   end
